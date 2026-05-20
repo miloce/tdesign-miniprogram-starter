@@ -2,6 +2,7 @@
 import config from './config';
 import Mock from './mock/index';
 import createBus from './utils/eventBus';
+import { getStoredUser, isLoggedIn, reportLoginTime } from './utils/auth';
 import { connectSocket, fetchUnreadNum } from './mock/chat';
 
 if (config.isMock) {
@@ -10,6 +11,9 @@ if (config.isMock) {
 
 App({
   onLaunch() {
+    this.globalData.userInfo = getStoredUser();
+    this.initLogin();
+
     const updateManager = wx.getUpdateManager();
 
     updateManager.onCheckForUpdate((res) => {
@@ -33,6 +37,8 @@ App({
   },
   globalData: {
     userInfo: null,
+    config: null,
+    ad: null,
     unreadNum: 0, // 未读消息数量
     socket: null, // SocketTask 对象
   },
@@ -62,5 +68,13 @@ App({
   setUnreadNum(unreadNum) {
     this.globalData.unreadNum = unreadNum;
     this.eventBus.emit('unread-num-change', unreadNum);
+  },
+
+  async initLogin() {
+    if (isLoggedIn()) {
+      setTimeout(() => {
+        reportLoginTime();
+      }, 10000);
+    }
   },
 });

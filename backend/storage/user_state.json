@@ -1,0 +1,49 @@
+{
+    "points": 1330,
+    "quota": 3,
+    "isVip": false,
+    "records": [
+        {
+            "id": "P20260519174144",
+            "sourceDesc": "观看激励广告",
+            "createTime": "2026-05-19 17:41",
+            "changeValue": 20,
+            "changeText": "+"
+        },
+        {
+            "id": "P20260519173329",
+            "sourceDesc": "观看激励广告",
+            "createTime": "2026-05-19 17:33",
+            "changeValue": 20,
+            "changeText": "+"
+        },
+        {
+            "id": "P20260519173328",
+            "sourceDesc": "每日签到",
+            "createTime": "2026-05-19 17:33",
+            "changeValue": 10,
+            "changeText": "+"
+        },
+        {
+            "id": "P20260520001",
+            "sourceDesc": "每日签到",
+            "createTime": "2026-05-20 09:10",
+            "changeValue": 10,
+            "changeText": "+"
+        },
+        {
+            "id": "P20260519002",
+            "sourceDesc": "观看激励广告",
+            "createTime": "2026-05-19 20:36",
+            "changeValue": 20,
+            "changeText": "+"
+        },
+        {
+            "id": "P20260519001",
+            "sourceDesc": "积分兑换制作次数",
+            "createTime": "2026-05-19 18:22",
+            "changeValue": 200,
+            "changeText": "-"
+        }
+    ]
+}

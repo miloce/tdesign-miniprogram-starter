@@ -1,0 +1,108 @@
+<view class="admin-page">
+  <nav title-text="管理员配置" />
+
+  <view class="admin-body">
+    <view class="panel">
+      <view class="panel__title">小程序功能配置</view>
+      <view class="form-row">
+        <view>
+          <view class="form-row__label">激励广告</view>
+          <view class="form-row__desc">控制生成流程中的广告能力</view>
+        </view>
+        <switch checked="{{appConfig.enableRewardAd}}" bindchange="onRewardAdChange" />
+      </view>
+      <view class="form-row">
+        <view>
+          <view class="form-row__label">微信支付</view>
+          <view class="form-row__desc">控制 VIP 和付费生成入口</view>
+        </view>
+        <switch checked="{{appConfig.enablePayment}}" bindchange="onPaymentChange" />
+      </view>
+      <view class="input-row">
+        <text>广告位 ID</text>
+        <input value="{{appConfig.rewardAdUnitId}}" placeholder="rewarded video ad unit id" bindinput="onRewardAdUnitChange" />
+      </view>
+      <view class="input-row">
+        <text>生成价格</text>
+        <input value="{{appConfig.price}}" type="digit" placeholder="0" bindinput="onPriceChange" />
+      </view>
+    </view>
+
+    <view class="panel">
+      <view class="panel__title">VIP 套餐配置</view>
+      <view class="config-card" wx:for="{{appConfig.vipPackages}}" wx:key="id">
+        <view class="config-card__title">{{item.name}}</view>
+        <view class="input-row">
+          <text>套餐名称</text>
+          <input value="{{item.name}}" data-index="{{index}}" data-field="name" bindinput="onVipPackageChange" />
+        </view>
+        <view class="input-row">
+          <text>现价</text>
+          <input value="{{item.currentPrice}}" type="digit" data-index="{{index}}" data-field="currentPrice" bindinput="onVipPackageChange" />
+        </view>
+        <view class="input-row">
+          <text>原价</text>
+          <input value="{{item.originalPrice}}" type="digit" data-index="{{index}}" data-field="originalPrice" bindinput="onVipPackageChange" />
+        </view>
+        <view class="input-row">
+          <text>标签</text>
+          <input value="{{item.tag}}" data-index="{{index}}" data-field="tag" bindinput="onVipPackageChange" />
+        </view>
+        <view class="input-row input-row--textarea">
+          <text>权益</text>
+          <input value="{{item.featuresText}}" placeholder="用逗号分隔" data-index="{{index}}" data-field="featuresText" bindinput="onVipPackageChange" />
+        </view>
+      </view>
+    </view>
+
+    <view class="panel">
+      <view class="panel__title">积分兑换配置</view>
+      <view class="config-card" wx:for="{{appConfig.exchangeItems}}" wx:key="id">
+        <view class="config-card__title">{{item.name}}</view>
+        <view class="input-row">
+          <text>名称</text>
+          <input value="{{item.name}}" data-index="{{index}}" data-field="name" bindinput="onExchangeItemChange" />
+        </view>
+        <view class="input-row">
+          <text>类型</text>
+          <picker mode="selector" range="{{exchangeTypeOptions}}" value="{{item.type === 'vip' ? 1 : 0}}" data-index="{{index}}" data-field="type" bindchange="onExchangeItemChange">
+            <view class="picker-value">{{item.type === 'vip' ? '兑换VIP' : '兑换次数'}}</view>
+          </picker>
+        </view>
+        <view class="input-row">
+          <text>所需积分</text>
+          <input value="{{item.points}}" type="number" data-index="{{index}}" data-field="points" bindinput="onExchangeItemChange" />
+        </view>
+        <view class="input-row">
+          <text>增加次数</text>
+          <input value="{{item.quota}}" type="number" data-index="{{index}}" data-field="quota" bindinput="onExchangeItemChange" />
+        </view>
+        <view class="input-row">
+          <text>VIP天数</text>
+          <input value="{{item.days}}" type="number" data-index="{{index}}" data-field="days" bindinput="onExchangeItemChange" />
+        </view>
+      </view>
+    </view>
+
+    <view class="panel">
+      <view class="panel__title">用户权益配置</view>
+      <view class="input-row">
+        <text>当前积分</text>
+        <input value="{{userState.points}}" type="number" bindinput="onPointsChange" />
+      </view>
+      <view class="input-row">
+        <text>剩余次数</text>
+        <input value="{{userState.quota}}" type="number" bindinput="onQuotaChange" />
+      </view>
+      <view class="form-row">
+        <view>
+          <view class="form-row__label">VIP 状态</view>
+          <view class="form-row__desc">开启后个人中心显示 VIP会员</view>
+        </view>
+        <switch checked="{{userState.isVip}}" bindchange="onVipChange" />
+      </view>
+    </view>
+
+    <button class="save-button" loading="{{saving}}" bindtap="onSave">保存配置</button>
+  </view>
+</view>

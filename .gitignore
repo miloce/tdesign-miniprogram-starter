@@ -109,3 +109,7 @@ miniprogram_npm
 .idea
 
 project.private.config.json
+
+# WeChat Pay merchant private keys
+backend/certs/apiclient_key.pem
+backend/certs/apiclient_cert.pem

@@ -1,0 +1,152 @@
+.mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.sheet {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  padding: 12rpx 24rpx calc(28rpx + env(safe-area-inset-bottom));
+  border-radius: 20rpx 20rpx 0 0;
+  background: #fff;
+  box-shadow: 0 -8rpx 24rpx rgba(0, 0, 0, 0.08);
+  transform: translateY(100%);
+  transition: transform 0.2s ease-out;
+}
+
+.sheet--show {
+  transform: translateY(0);
+}
+
+.drag {
+  width: 100rpx;
+  height: 10rpx;
+  margin: 18rpx auto;
+  border-radius: 10rpx;
+  background: #e8e8e8;
+}
+
+.row {
+  padding: 16rpx 0;
+}
+
+.row-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  margin: 20rpx 0;
+  line-height: 1;
+}
+
+.title {
+  color: #8a8f99;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.link-quick {
+  position: relative;
+  width: auto;
+  margin: 0;
+  padding: 0 8rpx 0 0;
+  border: none;
+  background: none;
+  color: #ff4d4f;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.link-quick::after {
+  border: none;
+}
+
+.link-quick .dot {
+  position: absolute;
+  top: -6rpx;
+  right: -12rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: #ff4d4f;
+}
+
+.row-wechat {
+  display: flex;
+  justify-content: center;
+  padding-top: 12rpx;
+  padding-bottom: 12rpx;
+}
+
+.wx-icon-img {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  box-shadow: 0 10rpx 26rpx rgba(7, 193, 96, 0.25);
+}
+
+.row-agree {
+  display: flex;
+  justify-content: center;
+}
+
+.agree {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  color: #4e5969;
+  font-size: 26rpx;
+}
+
+.agree-text {
+  color: #b0b3bb;
+}
+
+.link {
+  color: #335dff;
+}
+
+.radio {
+  position: relative;
+  width: 34rpx;
+  height: 34rpx;
+  border: 2rpx solid #c9cdd4;
+  border-radius: 50%;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.radio.checked {
+  border-color: #335dff;
+}
+
+.radio.checked::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18rpx;
+  height: 18rpx;
+  margin-top: -9rpx;
+  margin-left: -9rpx;
+  border-radius: 50%;
+  background: #335dff;
+  content: '';
+}
+
+.error {
+  padding: 10rpx 0;
+  color: #f53f3f;
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.safe-bottom {
+  height: 16rpx;
+}

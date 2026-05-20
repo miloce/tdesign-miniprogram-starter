@@ -1,48 +1,113 @@
-<nav nav-type="search" />
+<nav title-text="网红代码生成" />
+
 <view class="home-container">
-  <view class="home-content">
-    <t-tabs defaultValue="recommend">
-      <t-tab-panel label="推荐" value="recommend">
-        <t-pull-down-refresh
-          value="{{enable}}"
-          bind:refresh="onRefresh"
-          loadingTexts="{{['下拉刷新', '松手刷新', '正在刷新', '刷新完成']}}"
-        >
-          <view class="home-card-list">
-            <t-swiper
-              list="{{swiperList}}"
-              navigation="{{ { type: 'dots-bar' } }}"
-              height="488rpx"
-              style="width: 340rpx"
-            />
-            <card
-              wx:for="{{cardInfo}}"
-              wx:key="index"
-              desc="{{item.desc}}"
-              url="{{item.url}}"
-              tags="{{item.tags}}"
-            />
-          </view>
-        </t-pull-down-refresh>
-      </t-tab-panel>
-      <t-tab-panel label="我的关注" value="follow">
-        <view class="home-card-list">
-          <card
-            wx:for="{{focusCardInfo}}"
-            wx:key="index"
-            desc="{{item.desc}}"
-            url="{{item.url}}"
-            tags="{{item.tags}}"
-          />
-        </view>
-      </t-tab-panel>
-    </t-tabs>
+  <view class="hero">
+    <view class="hero__title">爆款代码生成</view>
+    <view class="hero__desc">选择模板，填写内容，生成可分享的专属链接。</view>
+    <view class="hero__stats">
+      <view>
+        <text class="num">5</text>
+        <text>热门模板</text>
+      </view>
+      <view>
+        <text class="num">9.9w+</text>
+        <text>累计制作</text>
+      </view>
+    </view>
   </view>
+
+  <view class="search-panel">
+    <t-icon name="search" size="36rpx" color="#5f6b7a" />
+    <input
+      value="{{keyword}}"
+      placeholder="搜索表白、生日、祝福代码"
+      confirm-type="search"
+      bindinput="onSearchInput"
+    />
+  </view>
+
+  <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="category-list">
+      <view
+        wx:for="{{categories}}"
+        wx:key="*this"
+        class="category {{activeCategory === item ? 'category--active' : ''}}"
+        data-category="{{item}}"
+        bindtap="onCategoryChange"
+      >
+        {{item}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <t-pull-down-refresh
+    value="{{enable}}"
+    bind:refresh="onRefresh"
+    loadingTexts="{{['下拉刷新', '松手刷新', '正在刷新', '刷新完成']}}"
+  >
+    <view class="section-title">
+      <text>热门推荐</text>
+      <text class="section-title__sub">点击预览后再制作</text>
+    </view>
+
+    <scroll-view class="hot-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="hot-list">
+        <view
+          wx:for="{{hotTemplates}}"
+          wx:key="id"
+          class="hot-card"
+          data-id="{{item.id}}"
+          bindtap="onTemplateTap"
+        >
+          <image src="{{item.cover}}" mode="aspectFill" />
+          <view class="hot-card__mask">
+            <view class="hot-card__title">{{item.title}}</view>
+            <view class="hot-card__meta">{{item.used}} 人制作</view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="section-title section-title--grid">
+      <text>全部模板</text>
+      <text class="section-title__sub">{{filteredTemplates.length}} 个可制作</text>
+    </view>
+
+    <view class="template-grid">
+      <view
+        wx:for="{{filteredTemplates}}"
+        wx:key="id"
+        class="template-card"
+        data-id="{{item.id}}"
+        bindtap="onTemplateTap"
+      >
+        <image class="template-card__cover" src="{{item.cover}}" mode="aspectFill" />
+        <view class="template-card__body">
+          <view class="template-card__title">{{item.title}}</view>
+          <view class="template-card__desc">{{item.subtitle}}</view>
+          <view class="template-card__tags">
+            <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+          </view>
+          <view class="template-card__footer">
+            <view class="heat">
+              <t-icon name="chart" size="28rpx" color="#ef6c00" />
+              {{item.hot}}
+            </view>
+            <t-button
+              size="small"
+              theme="primary"
+              data-id="{{item.id}}"
+              catchtap="onMakeTap"
+            >
+              立即制作
+            </t-button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <t-empty wx:if="{{filteredTemplates.length === 0}}" description="没有找到相关模板" />
+  </t-pull-down-refresh>
 </view>
 
-<view class="home-release">
-  <t-button theme="primary" size="large" icon="add" shape="round" bindtap="goRelease">
-    发布
-  </t-button>
-</view>
 <t-message id="t-message" />

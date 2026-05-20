@@ -1,0 +1,103 @@
+<view class="integral-page">
+  <nav title-text="积分中心" />
+
+  <scroll-view class="integral-container" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view class="points-header">
+      <view class="points-card">
+        <view class="diamond-icon">
+          <t-icon name="gift" size="62rpx" />
+        </view>
+        <view class="points-info">
+          <text class="points-label">当前积分：</text>
+          <text class="points-value">{{currentPoints}}</text>
+        </view>
+        <view class="points-tip">
+          积分兑换功能
+          <text bindtap="showExchangeRules" class="question-icon">?</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="vip-status" wx:if="{{paymentEnabled}}">
+      <text class="vip-text">{{isVipText}}</text>
+      <text bindtap="navigateToVipPage" class="vip-badge" wx:if="{{!isVip}}">开通VIP</text>
+    </view>
+
+    <view class="tab-container">
+      <view bindtap="switchTab" class="tab-item {{isEarn ? 'active' : ''}}" data-tab="earn">
+        <text class="tab-text">积分获取</text>
+      </view>
+      <view bindtap="switchTab" class="tab-item {{isRecord ? 'active' : ''}}" data-tab="record">
+        <text class="tab-text">积分记录</text>
+      </view>
+      <view bindtap="switchTab" class="tab-item {{isExchange ? 'active' : ''}}" data-tab="exchange">
+        <text class="tab-text">积分兑换</text>
+      </view>
+    </view>
+
+    <view class="content-container">
+      <view class="earn-content" wx:if="{{isEarn}}">
+        <view class="earn-list">
+          <block wx:for="{{earnOptions}}" wx:key="id">
+            <view
+              bindtap="handleEarnPoints"
+              class="earn-item {{!item.isActive ? 'disabled' : ''}}"
+              data-option="{{item}}"
+              wx:if="{{item.type !== 'invite_friend'}}"
+            >
+              <text class="earn-name">{{item.name}}</text>
+              <text class="earn-reward">+{{item.points}}</text>
+            </view>
+            <button
+              class="earn-item invite-button native-button"
+              data-option="{{item}}"
+              open-type="share"
+              wx:if="{{item.type === 'invite_friend' && item.isActive}}"
+            >
+              <text class="earn-name">{{item.name}}</text>
+              <text class="earn-reward">+{{item.points}}</text>
+            </button>
+          </block>
+        </view>
+        <view class="vip-entry" wx:if="{{!isVip && paymentEnabled}}">
+          <text class="vip-entry-text">不想做任务？</text>
+          <text bindtap="navigateToVipPage" class="vip-entry-button">立即开通VIP</text>
+        </view>
+      </view>
+
+      <view class="record-content" wx:if="{{isRecord}}">
+        <view class="record-list">
+          <view class="record-item" wx:for="{{pointRecords}}" wx:key="id">
+            <view class="record-info">
+              <text class="record-source">{{item.sourceDesc}}</text>
+              <text class="record-time">{{item.createTime}}</text>
+            </view>
+            <text class="record-points">{{item.changeText}}{{item.changeValue}}</text>
+          </view>
+          <view class="empty-record" wx:if="{{pointRecords.length === 0}}">
+            <text class="empty-text">暂无积分记录</text>
+            <text class="empty-tip">完成任务可以获得积分哦</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="exchange-content" wx:if="{{isExchange}}">
+        <view class="exchange-list">
+          <view
+            bindtap="selectExchange"
+            class="exchange-item {{selectedExchangeIndex === index ? 'selected' : ''}}"
+            data-index="{{index}}"
+            wx:for="{{exchangeItems}}"
+            wx:key="id"
+          >
+            <view class="exchange-title">{{item.name}}</view>
+            <view class="exchange-points">{{item.points}}积分</view>
+          </view>
+        </view>
+        <view bindtap="payPoints" class="pay-button">立即兑换</view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<login-sheet show="{{showLogin}}" bind:close="onCloseLogin" bind:success="onLoginSuccess" />

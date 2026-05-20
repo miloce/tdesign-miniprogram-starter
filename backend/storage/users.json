@@ -1,0 +1,146 @@
+[
+    {
+        "id": 13,
+        "openid": "dev_openid_local",
+        "nickname": "测试用户",
+        "avatar": "",
+        "phone": "",
+        "email": "",
+        "role": "user",
+        "status": "active",
+        "points": 1888,
+        "quota": 88,
+        "isVip": true,
+        "vipExpireAt": "forever",
+        "remark": "",
+        "createdAt": "2026-05-20T06:21:18+00:00",
+        "lastLoginAt": "2026-05-20T06:21:18+00:00",
+        "loginCount": 1,
+        "records": [
+            {
+                "id": "P20260520001",
+                "sourceDesc": "每日签到",
+                "createTime": "2026-05-20 09:10",
+                "changeValue": 10,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260519002",
+                "sourceDesc": "观看激励广告",
+                "createTime": "2026-05-19 20:36",
+                "changeValue": 20,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260519001",
+                "sourceDesc": "积分兑换制作次数",
+                "createTime": "2026-05-19 18:22",
+                "changeValue": 200,
+                "changeText": "-"
+            }
+        ]
+    },
+    {
+        "id": 390235,
+        "openid": "dev_openid_098f6bcd4621",
+        "nickname": "云栈点用户",
+        "avatar": "",
+        "phone": "",
+        "email": "",
+        "role": "user",
+        "status": "active",
+        "points": 1280,
+        "quota": 3,
+        "isVip": false,
+        "vipExpireAt": "",
+        "remark": "",
+        "createdAt": "2026-05-20T06:00:50+00:00",
+        "lastLoginAt": "2026-05-20T06:00:50+00:00",
+        "loginCount": 1,
+        "records": [
+            {
+                "id": "P20260520001",
+                "sourceDesc": "每日签到",
+                "createTime": "2026-05-20 09:10",
+                "changeValue": 10,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260519002",
+                "sourceDesc": "观看激励广告",
+                "createTime": "2026-05-19 20:36",
+                "changeValue": 20,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260519001",
+                "sourceDesc": "积分兑换制作次数",
+                "createTime": "2026-05-19 18:22",
+                "changeValue": 200,
+                "changeText": "-"
+            }
+        ]
+    },
+    {
+        "id": 233111,
+        "openid": "oL8I43flaski-3Q2shkh4olGQEn4",
+        "nickname": "管理员",
+        "avatar": "",
+        "phone": "",
+        "email": "",
+        "role": "admin",
+        "status": "active",
+        "points": 1330,
+        "quota": 3,
+        "isVip": false,
+        "vipExpireAt": "",
+        "remark": "",
+        "createdAt": "2026-05-20T06:00:50+00:00",
+        "lastLoginAt": "2026-05-20T06:00:50+00:00",
+        "loginCount": 0,
+        "records": [
+            {
+                "id": "P20260519174144",
+                "sourceDesc": "观看激励广告",
+                "createTime": "2026-05-19 17:41",
+                "changeValue": 20,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260519173329",
+                "sourceDesc": "观看激励广告",
+                "createTime": "2026-05-19 17:33",
+                "changeValue": 20,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260519173328",
+                "sourceDesc": "每日签到",
+                "createTime": "2026-05-19 17:33",
+                "changeValue": 10,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260520001",
+                "sourceDesc": "每日签到",
+                "createTime": "2026-05-20 09:10",
+                "changeValue": 10,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260519002",
+                "sourceDesc": "观看激励广告",
+                "createTime": "2026-05-19 20:36",
+                "changeValue": 20,
+                "changeText": "+"
+            },
+            {
+                "id": "P20260519001",
+                "sourceDesc": "积分兑换制作次数",
+                "createTime": "2026-05-19 18:22",
+                "changeValue": 200,
+                "changeText": "-"
+            }
+        ]
+    }
+]

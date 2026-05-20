@@ -1,82 +1,90 @@
 import Message from 'tdesign-miniprogram/message/index';
 import request from '~/api/request';
 
-// 获取应用实例
-// const app = getApp()
-
 Page({
   data: {
     enable: false,
-    swiperList: [],
-    cardInfo: [],
-    // 发布
-    motto: 'Hello World',
-    userInfo: {},
-    hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    canIUseGetUserProfile: false,
-    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName'), // 如需尝试获取用户信息可改为false
+    keyword: '',
+    activeCategory: '全部',
+    categories: [],
+    templates: [],
+    filteredTemplates: [],
+    hotTemplates: [],
   },
-  // 生命周期
-  async onReady() {
-    const [cardRes, swiperRes] = await Promise.all([
-      request('/home/cards').then((res) => res.data),
-      request('/home/swipers').then((res) => res.data),
-    ]);
 
-    this.setData({
-      cardInfo: cardRes.data,
-      focusCardInfo: cardRes.data.slice(0, 3),
-      swiperList: swiperRes.data,
-    });
+  onReady() {
+    this.loadTemplates();
   },
-  onLoad(option) {
-    if (wx.getUserProfile) {
+
+  async loadTemplates() {
+    try {
+      const res = await request('/code/templates');
+      const { categories, list } = res.data.data;
       this.setData({
-        canIUseGetUserProfile: true,
+        categories,
+        templates: list,
+        filteredTemplates: list,
+        hotTemplates: list.slice(0, 3),
       });
-    }
-    if (option.oper) {
-      let content = '';
-      if (option.oper === 'release') {
-        content = '发布成功';
-      } else if (option.oper === 'save') {
-        content = '保存成功';
-      }
-      this.showOperMsg(content);
+    } catch (err) {
+      this.showMessage('模板加载失败，请稍后重试', 'error');
     }
   },
+
   onRefresh() {
-    this.refresh();
-  },
-  async refresh() {
-    this.setData({
-      enable: true,
+    this.setData({ enable: true });
+    this.loadTemplates().finally(() => {
+      setTimeout(() => {
+        this.setData({ enable: false });
+      }, 500);
     });
-    const [cardRes, swiperRes] = await Promise.all([
-      request('/home/cards').then((res) => res.data),
-      request('/home/swipers').then((res) => res.data),
-    ]);
-
-    setTimeout(() => {
-      this.setData({
-        enable: false,
-        cardInfo: cardRes.data,
-        swiperList: swiperRes.data,
-      });
-    }, 1500);
   },
-  showOperMsg(content) {
-    Message.success({
+
+  onCategoryChange(e) {
+    const activeCategory = e.currentTarget.dataset.category;
+    this.setData({ activeCategory }, () => this.filterTemplates());
+  },
+
+  onSearchInput(e) {
+    this.setData({ keyword: e.detail.value }, () => this.filterTemplates());
+  },
+
+  filterTemplates() {
+    const { activeCategory, keyword, templates } = this.data;
+    const normalizedKeyword = keyword.trim().toLowerCase();
+    const filteredTemplates = templates.filter((item) => {
+      const matchCategory = activeCategory === '全部' || item.category === activeCategory;
+      const matchKeyword =
+        !normalizedKeyword ||
+        item.title.toLowerCase().includes(normalizedKeyword) ||
+        item.subtitle.toLowerCase().includes(normalizedKeyword) ||
+        item.tags.some((tag) => tag.toLowerCase().includes(normalizedKeyword));
+      return matchCategory && matchKeyword;
+    });
+    this.setData({ filteredTemplates });
+  },
+
+  onTemplateTap(e) {
+    const { id } = e.currentTarget.dataset;
+    wx.navigateTo({
+      url: `/pages/template/detail?id=${id}`,
+    });
+  },
+
+  onMakeTap(e) {
+    const { id } = e.currentTarget.dataset;
+    wx.navigateTo({
+      url: `/pages/make/index?id=${id}`,
+    });
+  },
+
+  showMessage(content, theme = 'success') {
+    Message[theme]({
       context: this,
       offset: [120, 32],
-      duration: 4000,
+      duration: 2500,
       content,
     });
   },
-  goRelease() {
-    wx.navigateTo({
-      url: '/pages/release/index',
-    });
-  },
 });
+

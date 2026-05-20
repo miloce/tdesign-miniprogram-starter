@@ -8,7 +8,7 @@ wx.request = function (config) {
     return;
   }
   var resTemplate = Mock._mocked[config.url].template;
-  var response = Mock.mock(resTemplate);
+  var response = typeof resTemplate === 'function' ? resTemplate(config.data, config) : Mock.mock(resTemplate);
   if (typeof config.success == 'function') {
     config.success(response);
   }

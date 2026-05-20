@@ -1,0 +1,58 @@
+<view class="vip-page">
+  <nav title-text="VIP会员" />
+
+  <scroll-view class="vip-container" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view class="container">
+      <view class="vip-header">
+        <view class="vip-icon">
+          <t-icon name="user-vip" size="82rpx" />
+        </view>
+        <view class="vip-title">开通VIP会员</view>
+        <view class="vip-subtitle">尊享所有功能</view>
+      </view>
+
+      <view class="packages-section">
+        <view class="section-title">VIP特权</view>
+        <view class="packages-list">
+          <view
+            bindtap="selectPackage"
+            class="package-item {{selectedPackageId === item.id ? 'selected' : ''}}"
+            data-id="{{item.id}}"
+            wx:for="{{packages}}"
+            wx:key="id"
+          >
+            <text class="package-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+            <view class="package-row">
+              <view class="package-price">
+                <text class="current-price">¥{{item.currentPrice}}</text>
+                <text class="original-price">¥{{item.originalPrice}}</text>
+              </view>
+              <view class="package-name">{{item.name}}</view>
+            </view>
+            <view class="package-features">
+              <text class="feature-item" wx:for="{{item.features}}" wx:key="index">{{item}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="agreement-section">
+    <view class="agreement-wrapper">
+      <view bindtap="toggleAgreement" class="agreement-label">
+        <view class="custom-checkbox {{agreedToAgreement ? 'checked' : ''}}">
+          <view class="checkbox-inner"></view>
+        </view>
+        <text class="agreement-text">我已阅读并同意</text>
+        <text catchtap="openAgreement" class="agreement-link" data-type="user">《用户协议》</text>
+        <text catchtap="openAgreement" class="agreement-link" data-type="privacy">《隐私协议》</text>
+        <text catchtap="openAgreement" class="agreement-link" data-type="payment">《支付协议》</text>
+      </view>
+    </view>
+  </view>
+  <view bindtap="handlePay" class="pay-button">立即支付</view>
+  <view bindtap="handleBottomButton" class="bottom-button">{{bottomButtonText}}</view>
+</view>
+
+<login-sheet show="{{showLogin}}" bind:close="onCloseLogin" bind:success="onLoginSuccess" />

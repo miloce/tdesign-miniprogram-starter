@@ -1,0 +1,36 @@
+<view wx:if="{{template}}" class="detail">
+  <image class="detail__cover" src="{{template.cover}}" mode="aspectFill" />
+
+  <view class="detail__content">
+    <view class="detail__title">{{template.title}}</view>
+    <view class="detail__subtitle">{{template.subtitle}}</view>
+
+    <view class="tags">
+      <text wx:for="{{template.tags}}" wx:key="*this">{{item}}</text>
+    </view>
+
+    <view class="panel">
+      <view class="panel__title">可定制内容</view>
+      <view wx:for="{{template.fields}}" wx:key="key" class="field-row">
+        <t-icon name="edit" size="30rpx" color="#1f6f78" />
+        <text>{{item.label}}</text>
+        <text wx:if="{{item.required}}" class="required">必填</text>
+      </view>
+    </view>
+
+    <view class="panel">
+      <view class="panel__title">生成流程</view>
+      <view class="steps">
+        <view>1. 预览模板效果</view>
+        <view>2. 填写专属内容</view>
+        <view>3. 提交后打开后端返回的预览链接</view>
+        <view>4. 通过广告/支付校验后生成正式链接</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-bar">
+    <t-button variant="outline" theme="primary" bindtap="onPreview">预览效果</t-button>
+    <t-button theme="primary" bindtap="onMake">选择制作</t-button>
+  </view>
+</view>

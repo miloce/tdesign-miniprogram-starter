@@ -2,18 +2,14 @@ const app = getApp();
 
 Component({
   data: {
+    hidden: false,
     value: '', // 初始值设置为空，避免第一次加载时闪烁
     unreadNum: 0, // 未读消息数量
     list: [
       {
         icon: 'home',
-        value: 'index',
+        value: 'home',
         label: '首页',
-      },
-      {
-        icon: 'chat',
-        value: 'notice',
-        label: '消息',
       },
       {
         icon: 'user',

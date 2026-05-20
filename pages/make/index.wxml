@@ -1,0 +1,50 @@
+<view wx:if="{{template}}" class="make">
+  <view class="template-head">
+    <image src="{{template.cover}}" mode="aspectFill" />
+    <view>
+      <view class="template-head__title">{{template.title}}</view>
+      <view class="template-head__desc">{{template.subtitle}}</view>
+    </view>
+  </view>
+
+  <view class="form-panel">
+    <view class="form-panel__title">定制内容</view>
+    <view wx:for="{{fields}}" wx:key="key" class="form-item">
+      <view class="form-item__label">
+        <text>{{item.label}}</text>
+        <text wx:if="{{item.required}}" class="required">*</text>
+      </view>
+      <textarea
+        wx:if="{{item.type === 'textarea'}}"
+        value="{{item.value}}"
+        placeholder="{{item.placeholder}}"
+        maxlength="500"
+        auto-height
+        data-key="{{item.key}}"
+        data-index="{{index}}"
+        bindinput="onFormInput"
+      />
+      <input
+        wx:else
+        type="{{item.type === 'number' ? 'number' : 'text'}}"
+        value="{{item.value}}"
+        placeholder="{{item.placeholder}}"
+        data-key="{{item.key}}"
+        data-index="{{index}}"
+        bindinput="onFormInput"
+      />
+    </view>
+  </view>
+
+  <view class="notice">
+    <t-icon name="info-circle" size="32rpx" color="#1f6f78" />
+    <text>预览会提交当前内容给后端，并打开后端返回的预览链接。</text>
+  </view>
+
+  <view class="action-bar">
+    <t-button variant="outline" theme="primary" loading="{{submitting}}" bindtap="onPreview">预览效果</t-button>
+    <t-button theme="primary" loading="{{submitting}}" bindtap="onGenerate">立即制作</t-button>
+  </view>
+</view>
+
+<login-sheet show="{{showLogin}}" bind:close="onCloseLogin" bind:success="onLoginSuccess" />

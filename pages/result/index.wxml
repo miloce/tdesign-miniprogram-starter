@@ -1,0 +1,24 @@
+<view class="result">
+  <view class="success-mark">
+    <t-icon wx:if="{{result && !failed}}" name="check-circle-filled" size="96rpx" color="#12b76a" />
+    <t-icon wx:elif="{{failed}}" name="info-circle" size="96rpx" color="#f59e0b" />
+    <t-loading wx:else theme="circular" size="96rpx" />
+  </view>
+  <view class="title">{{result && !failed ? '正式链接已生成' : statusText}}</view>
+  <view class="desc">{{result ? result.title : '结果编号：' + orderId}}</view>
+
+  <view wx:if="{{result && result.link}}" class="link-box">
+    <text>{{result.link}}</text>
+  </view>
+
+  <view wx:if="{{result && result.link}}" class="actions">
+    <t-button theme="primary" block bindtap="onOpen">打开链接</t-button>
+    <t-button variant="outline" theme="primary" block bindtap="onCopy">复制链接</t-button>
+    <t-button variant="text" block bindtap="onBackHome">返回首页</t-button>
+  </view>
+
+  <view wx:elif="{{failed}}" class="actions">
+    <t-button theme="primary" block bindtap="onRetry">重新查询</t-button>
+    <t-button variant="text" block bindtap="onBackHome">返回首页</t-button>
+  </view>
+</view>

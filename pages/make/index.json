@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "制作代码",
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "login-sheet": "/components/login-sheet"
+  }
+}

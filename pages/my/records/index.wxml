@@ -1,0 +1,36 @@
+<view class="page">
+  <nav title-text="制作记录" />
+  <scroll-view scroll-y="{{true}}" class="list-scroll">
+    <view
+      wx:for="{{records}}"
+      wx:key="id"
+      class="list-item"
+      data-link="{{item.link}}"
+      data-title="{{item.title}}"
+      bindtap="onView"
+    >
+      <view class="cover-small">
+        <t-icon name="code" size="58rpx" />
+      </view>
+      <view class="middle-wide">
+        <view class="title">{{item.title}}</view>
+        <view class="content">{{item.link}}</view>
+        <view class="extra-info">{{item.createdAt}}　{{item.status}}</view>
+      </view>
+      <button class="view-btn-small native-button" data-link="{{item.link}}" catchtap="onCopy">复制</button>
+    </view>
+
+    <view class="load-text" wx:if="{{loading}}">加载中...</view>
+    <view class="empty-container" wx:if="{{empty}}">
+      <view class="empty-icon">
+        <t-icon name="folder" size="112rpx" />
+      </view>
+      <text class="empty-text">暂无模板记录</text>
+      <view class="create-btn" bindtap="goHome">
+        <text>去找找灵感</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<login-sheet show="{{showLogin}}" bind:close="onCloseLogin" bind:success="onLoginSuccess" />

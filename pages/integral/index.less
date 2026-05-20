@@ -1,0 +1,310 @@
+page {
+  background: linear-gradient(180deg, #f8f9ff, #f0f2f5);
+}
+
+.integral-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.integral-container {
+  height: calc(100vh - 112rpx);
+}
+
+.points-header {
+  padding: 60rpx 60rpx 30rpx;
+  background: linear-gradient(180deg, #0792ff, rgba(7, 146, 255, 0));
+}
+
+.points-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 42rpx 24rpx 24rpx;
+}
+
+.diamond-icon {
+  position: absolute;
+  top: -44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+  background: #fff;
+  color: #f06292;
+}
+
+.points-info {
+  display: flex;
+  align-items: baseline;
+}
+
+.points-label {
+  color: #f06292;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.points-value {
+  color: #f06292;
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.points-tip {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+  color: #666;
+  font-size: 24rpx;
+}
+
+.question-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24rpx;
+  height: 24rpx;
+  margin-left: 10rpx;
+  border: 2rpx solid #666;
+  border-radius: 50%;
+  font-size: 18rpx;
+  line-height: 24rpx;
+}
+
+.vip-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 24rpx 24rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 12rpx;
+  background: #ddf1dd;
+  color: #4caf50;
+}
+
+.vip-text,
+.vip-badge {
+  font-size: 24rpx;
+}
+
+.vip-badge {
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  background: #2364d0;
+  color: #fff;
+}
+
+.tab-container {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  overflow: hidden;
+  border-radius: 16rpx 16rpx 0 0;
+  background: #fff;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.tab-item {
+  flex: 1;
+  padding: 22rpx 0;
+  text-align: center;
+}
+
+.tab-item.active {
+  background: #e6f3ff;
+}
+
+.tab-text {
+  color: #666;
+  font-size: 26rpx;
+}
+
+.tab-item.active .tab-text {
+  color: #1989fa;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.content-container {
+  padding: 24rpx;
+}
+
+.earn-content,
+.exchange-content {
+  border-radius: 12rpx;
+  background: #fff;
+  padding: 30rpx;
+}
+
+.earn-list {
+  overflow: hidden;
+  border-radius: 20rpx;
+}
+
+.earn-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 90rpx;
+  margin-bottom: 30rpx;
+  padding: 0 28rpx;
+  border-radius: 60rpx;
+  background: #0f58d2;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.earn-item.disabled {
+  background: #bbb;
+  opacity: 0.7;
+}
+
+.earn-name {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.earn-reward {
+  color: #fff;
+  font-size: 26rpx;
+}
+
+.vip-entry {
+  margin-bottom: 10rpx;
+  text-align: center;
+}
+
+.vip-entry-text {
+  margin-right: 10rpx;
+  color: #666;
+  font-size: 24rpx;
+}
+
+.vip-entry-button {
+  padding: 8rpx 24rpx;
+  border-radius: 30rpx;
+  background: #e6f3ff;
+  color: #1989fa;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.record-list {
+  width: 100%;
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+  border: 2rpx solid #eee;
+  border-radius: 16rpx;
+  background: #fff;
+}
+
+.record-info {
+  flex: 1;
+}
+
+.record-source {
+  display: block;
+  margin-bottom: 10rpx;
+  color: #333;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.record-time {
+  display: block;
+  color: #999;
+  font-size: 24rpx;
+}
+
+.record-points {
+  min-width: 80rpx;
+  color: #f06292;
+  font-size: 36rpx;
+  font-weight: 700;
+  text-align: right;
+}
+
+.empty-record {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0;
+  color: #999;
+}
+
+.empty-text {
+  margin-bottom: 10rpx;
+  color: #666;
+  font-size: 32rpx;
+}
+
+.empty-tip {
+  color: #999;
+  font-size: 28rpx;
+}
+
+.exchange-list {
+  margin-bottom: 20rpx;
+}
+
+.exchange-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100rpx;
+  margin-bottom: 20rpx;
+  padding: 0 30rpx;
+  border: 4rpx solid transparent;
+  border-radius: 12rpx;
+  background: #dceaff;
+  box-sizing: border-box;
+}
+
+.exchange-item.selected {
+  border-color: #4a6fe3;
+  background: #b3cff9;
+}
+
+.exchange-title {
+  color: #333;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.exchange-points {
+  color: #2364d0;
+  font-size: 26rpx;
+}
+
+.pay-button {
+  height: 90rpx;
+  margin: 40rpx 0 10rpx;
+  border-radius: 60rpx;
+  background: #0f58d2;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 90rpx;
+  text-align: center;
+}
+
+.native-button {
+  border: none;
+}
+
+.native-button::after {
+  border: none;
+}

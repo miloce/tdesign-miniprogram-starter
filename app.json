@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/home/index", "pages/message/index", "pages/my/index"],
+  "pages": ["pages/home/index", "pages/my/index"],
   "usingComponents": {
     "t-toast": "tdesign-miniprogram/toast/toast"
   },
@@ -15,19 +15,29 @@
       "pages": ["index"]
     },
     {
+      "root": "pages/my/records",
+      "name": "records",
+      "pages": ["index"]
+    },
+    {
       "root": "pages/chat",
       "name": "chat",
       "pages": ["index"]
     },
     {
-      "root": "pages/login",
-      "name": "login",
-      "pages": ["login"]
+      "root": "pages/integral",
+      "name": "integral",
+      "pages": ["index"]
     },
     {
-      "root": "pages/loginCode",
-      "name": "loginCode",
-      "pages": ["loginCode"]
+      "root": "pages/vip",
+      "name": "vip",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/admin",
+      "name": "admin",
+      "pages": ["index"]
     },
     {
       "root": "pages/dataCenter",
@@ -43,6 +53,26 @@
       "root": "pages/release",
       "name": "release",
       "pages": ["index"]
+    },
+    {
+      "root": "pages/template",
+      "name": "template",
+      "pages": ["detail"]
+    },
+    {
+      "root": "pages/make",
+      "name": "make",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/result",
+      "name": "result",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/webview",
+      "name": "webview",
+      "pages": ["index"]
     }
   ],
   "window": {
@@ -57,10 +87,6 @@
       {
         "pagePath": "pages/home/index",
         "text": "首页"
-      },
-      {
-        "pagePath": "pages/message/index",
-        "text": "消息"
       },
       {
         "pagePath": "pages/my/index",
