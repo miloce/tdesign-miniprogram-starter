@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$root = dirname(__DIR__);
+
+require_once $root . '/vendor/autoload.php';
+
+use Yzd\Services\AppConfigService;
+use Yzd\Services\TemplateDefaults;
+use Yzd\Services\TemplateRepository;
+
+$command = $argv[1] ?? 'help';
+
+if ($command === 'check') {
+    echo 'PHP: ' . PHP_VERSION . PHP_EOL;
+    echo 'Framework: ThinkPHP' . PHP_EOL;
+    echo 'Autoload: OK' . PHP_EOL;
+    echo 'Storage: ' . (is_dir($root . '/storage') && is_writable($root . '/storage') ? 'OK' : 'NOT WRITABLE') . PHP_EOL;
+    exit(0);
+}
+
+if ($command === 'init') {
+    $baseUrl = rtrim(getenv('YZD_PUBLIC_BASE_URL') ?: 'http://127.0.0.1:8000', '/');
+    AppConfigService::make()->get();
+    (new TemplateRepository($root . '/storage'))->reset(TemplateDefaults::all($baseUrl));
+    echo 'Init: OK' . PHP_EOL;
+    exit(0);
+}
+
+echo <<<TEXT
+Usage:
+  php bin/yzd check  Check runtime prerequisites
+  php bin/yzd init   Initialize config and default templates
+
+TEXT;

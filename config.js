@@ -1,4 +1,4 @@
 export default {
   isMock: false,
-  baseUrl: 'https://y.miloce.cn',
+  baseUrl: 'http://127.0.0.1:8000',
 };

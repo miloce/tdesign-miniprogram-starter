@@ -2,20 +2,23 @@
   <view class="mask" bindtap="onMask"></view>
   <view class="sheet {{visible ? 'sheet--show' : ''}}" catchtouchmove="noop">
     <view class="drag"></view>
-    <view class="row row-top">
-      <text class="title">还没有账号？</text>
-      <button class="link-quick" bindtap="onWechatLoginTap" loading="{{submitting}}">
-        点击登录<text class="dot"></text>
-      </button>
+    <view class="sheet-head">
+      <view class="head-copy">
+        <view class="title">授权登录</view>
+        <view class="subtitle">登录后可继续使用完整服务</view>
+      </view>
+      <view class="close" bindtap="onMask">×</view>
     </view>
-    <view class="row row-wechat">
+
+    <button class="wechat-button" bindtap="onWechatLoginTap" loading="{{submitting}}">
       <image
         class="wx-icon-img"
         mode="aspectFit"
         src="https://img0.baidu.com/it/u=3165023803,2137666183&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"
-        bindtap="onWechatLoginTap"
       />
-    </view>
+      <text>一键登录</text>
+    </button>
+
     <view class="row row-agree">
       <label class="agree">
         <view class="radio {{agreed ? 'checked' : ''}}" bindtap="toggleAgree"></view>

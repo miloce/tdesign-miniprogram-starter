@@ -43,15 +43,8 @@ Page({
 
   openAgreement(e) {
     const type = e.currentTarget.dataset.type;
-    const titleMap = {
-      user: '用户协议',
-      privacy: '隐私协议',
-      payment: '支付协议',
-    };
-    wx.showModal({
-      title: titleMap[type] || '协议',
-      content: '当前为开发环境协议占位内容，正式上线时可替换为协议页面。',
-      showCancel: false,
+    wx.navigateTo({
+      url: `/pages/agreement/index?type=${type || 'user'}`,
     });
   },
 

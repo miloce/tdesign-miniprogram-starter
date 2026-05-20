@@ -57,18 +57,14 @@ Component({
     },
 
     openUserAgreement() {
-      wx.showModal({
-        title: '用户协议',
-        content: '当前为开发环境协议占位内容，正式上线时可替换为协议页面。',
-        showCancel: false,
+      wx.navigateTo({
+        url: '/pages/agreement/index?type=user',
       });
     },
 
     openPrivacy() {
-      wx.showModal({
-        title: '隐私协议',
-        content: '当前为开发环境协议占位内容，正式上线时可替换为协议页面。',
-        showCancel: false,
+      wx.navigateTo({
+        url: '/pages/agreement/index?type=privacy',
       });
     },
 

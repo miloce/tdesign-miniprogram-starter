@@ -1,0 +1,23 @@
+<view class="agreement-page">
+  <scroll-view class="agreement-scroll" scroll-y="{{true}}" enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view class="article">
+      <view class="agreement-title">{{title}}</view>
+      <view class="agreement-meta">更新日期：{{updatedAt}}</view>
+      <view class="agreement-meta">生效日期：{{effectiveAt}}</view>
+
+      <view class="paragraph paragraph-intro">{{intro}}</view>
+
+      <view wx:for="{{sections}}" wx:key="title">
+        <view class="section-title">{{index + 1}}. {{item.title}}</view>
+        <view class="paragraph" wx:for="{{item.content}}" wx:for-item="text" wx:key="*this">
+          {{text}}
+        </view>
+      </view>
+
+      <view class="footer">
+        <view>云栈点</view>
+        <view>联系方式：{{contact}}</view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

@@ -51,6 +51,12 @@ Page({
   onEleClick(e) {
     const { title, url } = e.currentTarget.dataset.data;
     if (url) return;
+    if (title === '隐私') {
+      wx.navigateTo({
+        url: '/pages/agreement/index?type=privacy',
+      });
+      return;
+    }
     this.onShowToast('#t-toast', title);
   },
 });

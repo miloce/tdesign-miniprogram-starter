@@ -73,6 +73,11 @@
       "root": "pages/webview",
       "name": "webview",
       "pages": ["index"]
+    },
+    {
+      "root": "pages/agreement",
+      "name": "agreement",
+      "pages": ["index"]
     }
   ],
   "window": {
