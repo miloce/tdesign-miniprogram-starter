@@ -1,0 +1,238 @@
+@charset "utf-8";
+
+/*全局控制*/
+body{margin:0;padding:0;font-size:12px;line-height:22px;font-family:"微软雅黑",Arial;-webkit-text-size-adjust:none;}
+html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td,p{margin:0;padding:0;}
+input,select,textarea{font-size:12px;line-height:16px;}img{border:0;}ul,li{list-style-type:none;}
+a{color:#333;text-decoration:none;}
+a:hover{text-decoration:underline;}
+.tc{text-align:center;}.tl{text-align:left;}.tr{text-align:right;}
+.dis{display:block;}.undis{display:none;}
+.fl{float:left;}.fr{float:right;}.cl{clear:both;}.fb{font-weight:bold;}.fnb{font-weight:200;margin-left:-1px;}
+.hr_1,.hr_10{font-size:1px;line-height:1px;clear:both;}
+.hr_1{height:1px;}.hr_10{height:10px;}
+input[type="text"]:focus,input[type="password"]:focus,textarea:focus{outline:none;}
+body,html{width: 100%;height: 100%;}
+
+/********************* 以下(结束标识)代码请在实际开发中删除 *********************/
+
+.waik{
+    width: 100%;
+    height: 100%;
+    background: #ffedfd;
+    position: absolute;
+    top: 0;
+    left:0;
+    transition: all 0.5s;
+    z-index: 999;
+}
+.jkwk{
+    width: 200px;
+    height: 300px;
+    position: relative;
+    left:calc(50% - 100px);
+    top:40%;
+}
+.xkwk{
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    font-size: 18px;
+    color: #3d3d3d;
+}
+.kejw{
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    margin: 0 auto;
+    padding-top: 30px;
+}
+.kejw span{
+    width: 75px;
+    height: 75px;
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+    border-radius: 50%;
+    background-color: #ffc0cb;
+    position: relative;
+}
+
+/* 波纹中心向四周扩散 不位移 */
+.kejw span::after{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background-color: #ffc0cb;
+    animation: example 2.5s infinite linear;
+}
+
+@keyframes example {  
+    0%   {
+        width: 75px;
+        height: 75px;
+        opacity: 1;
+    }  
+    100% {
+        width: 135px;
+        height: 135px;
+        opacity: 0;
+    }  
+}
+
+/* 文字固定 line-height:25px 居中整齐 */
+.kejw span a{
+    background: transparent;
+    width: 75px;
+    height: 75px;
+    margin: 0 auto;
+    line-height: 25px;
+    padding: 0;
+    border-radius: 50%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    position: relative;
+    z-index: 2;
+    text-decoration: none;
+}
+.dabjr{
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    /*background: url(../img/bj.jpg);*/
+    position: relative;
+    top: 0;
+    left:0;
+    overflow: hidden;
+}
+.kl{
+    position: absolute;
+    transition: all 1.5s;
+}
+.kl img{
+    width: 100%;
+}
+.sr7{
+    width: 80%;
+    top:3%;
+    left:-100%;
+}
+
+.sr5{
+    width: 94%;
+    bottom: 0;
+    right:-100%;
+}
+.sr2{
+    width: 80%;
+    top:29%;
+    left:-100%;
+}
+.sr1{
+    width: 30%;
+    top:43%;
+    left:-100%;
+}
+.sr4{
+    width: 30%;
+    top:43%;
+    right:-100%;
+}
+.sr3{
+    width: 0%;
+    top:50%;
+    left:50%;
+}
+.sr6{
+    width: 0%;
+    bottom:0%;
+    left:50%;
+}
+.sr8{
+    width: 0%;
+    min-height: 0%;
+    font-size: 0px;
+    top:31%;
+    left:50%;
+    background: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    opacity: 0;
+}
+#wz8 {  
+    position: relative;  
+    font-size: 14px;
+    overflow: hidden;  
+    color: #5fb7d9;
+    line-height: 25px; 
+}  
+#wz8::after {  
+    content: "";  
+    background: url("//") no-repeat;
+    background-size: 100%;
+    position: absolute;  
+    width: 40px;
+    height: 40px;
+  }
+#snow{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.flake {  
+    position: absolute;  
+    background-size: 100%; 
+}  
+.flake.large {  
+    width: 50px;  
+    height: 50px;  
+    animation: fall 15.5s infinite linear;  
+}  
+  
+.flake.small {  
+    width: 60px;  
+    height: 60px;  
+    animation: fall 15s infinite linear;  
+}  
+  
+@keyframes fall {  
+    0% {bottom: -10%;}  
+    100% {bottom: 120%;}
+}
+
+
+.message{position:fixed;top:20px;left:50%;transform:translateX(-50%);background-color:#f56c6c;color:#fff;padding:10px 20px;border-radius:4px;box-shadow:0 2px 12px 0 rgba(0,0,0,.1);font-size:14px;opacity:0;transition:opacity .3s ease-in-out;z-index:9999}
+.message.show{opacity:1}
+#zhizuoBtn{display:none;position:fixed;bottom:50px;right:20px;width:30%;padding:12px 24px;background:#07c160;color:#fff;border:none;border-radius:25px;box-shadow:0 4px 8px rgba(0,0,0,.1);cursor:pointer;z-index:9999}
+#backBtn{display:none;position:fixed;bottom:50px;left:20px;width:30%;padding:12px 24px;background:#07c160;color:#fff;border:none;border-radius:25px;box-shadow:0 4px 8px rgba(0,0,0,.1);cursor:pointer;z-index:9999}
+#zhizuo{position:fixed;top:5%;right:10px;width:30px;height:30px;z-index:1000;background:#696969;border-radius:50%;padding:1px;text-align:center;color:#ddd;text-decoration:none;line-height:30px;font-size:11px;border:2px solid #fff}
+.div_btn{position:fixed;cursor:pointer;width:42px;height:42px;border:2px solid #fff;border-radius:50%;font-size:1em;line-height:40px;text-align:center;z-index:999}
+#div_music{border:none;top:30px;right:30px}
+#div_record{top:100px;background-color:#0c0c0c}
+#div_support{top:170px;background-color:#100f0f}
+.div_music_tips{position:fixed;top:70px;right:30px;z-index:999}
+.div_record_tips{position:fixed;top:140px;z-index:999}
+.div_btn_big{position:fixed;cursor:pointer;width:52px;background-color:rgba(112,128,144,.71);border-radius:5px;padding:10px 0;font-size:1.1em;line-height:1.3em;text-align:center;z-index:999}
+#div_s_upload{top:360px}
+#div_s_sound{top:440px}
+#div_s_choose{top:520px}
+#div_s_qa{top:600px}
+@-webkit-keyframes music_play_rotate{0%{-webkit-transform:rotate(0)}
+100%{-webkit-transform:rotate(360deg)}
+}
+@-webkit-keyframes btn_rotate{0%{-webkit-transform:rotate(0)}
+40%{-webkit-transform:rotate(0)}
+50%{-webkit-transform:rotate(30deg)}
+60%{-webkit-transform:rotate(0)}
+70%{-webkit-transform:rotate(30deg)}
+80%{-webkit-transform:rotate(0)}
+100%{-webkit-transform:rotate(0)}
+}

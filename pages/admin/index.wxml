@@ -13,8 +13,8 @@
       </view>
       <view class="form-row">
         <view>
-          <view class="form-row__label">微信支付</view>
-          <view class="form-row__desc">控制 VIP 和付费生成入口</view>
+          <view class="form-row__label">小程序虚拟支付</view>
+          <view class="form-row__desc">控制 VIP、付费生成和小助手服务的虚拟商品支付入口</view>
         </view>
         <switch checked="{{appConfig.enablePayment}}" bindchange="onPaymentChange" />
       </view>
@@ -25,6 +25,14 @@
       <view class="input-row">
         <text>生成价格</text>
         <input value="{{appConfig.price}}" type="digit" placeholder="0" bindinput="onPriceChange" />
+      </view>
+      <view class="input-row">
+        <text>生成商品 ID</text>
+        <input value="{{appConfig.codeProductId}}" placeholder="code_generation" bindinput="onCodeProductIdChange" />
+      </view>
+      <view class="input-row">
+        <text>小助手商品 ID</text>
+        <input value="{{appConfig.assistantProductId}}" placeholder="assistant_service" bindinput="onAssistantProductIdChange" />
       </view>
     </view>
 
@@ -47,6 +55,10 @@
         <view class="input-row">
           <text>标签</text>
           <input value="{{item.tag}}" data-index="{{index}}" data-field="tag" bindinput="onVipPackageChange" />
+        </view>
+        <view class="input-row">
+          <text>商品 ID</text>
+          <input value="{{item.productId}}" placeholder="vip_month" data-index="{{index}}" data-field="productId" bindinput="onVipPackageChange" />
         </view>
         <view class="input-row input-row--textarea">
           <text>权益</text>

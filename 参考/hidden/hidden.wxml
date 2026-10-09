@@ -1,0 +1,145 @@
+<view class="container">
+  <!-- 背景装饰 -->
+  <view class="background">
+    <view class="bg-circle circle-1"></view>
+    <view class="bg-circle circle-2"></view>
+    <view class="bg-circle circle-3"></view>
+  </view>
+  
+  <!-- 自定义导航栏 -->
+  <custom-navbar class="custom-navbar" title="步数助手" showLogo="{{true}}" showBack="{{true}}"></custom-navbar>
+  
+  <!-- 主要内容区域 -->
+  <view class="main-content">
+    <!-- 标题区域 -->
+    <view class="header">
+      <image class="app-icon" src="https://static.luozhinet.com/xcx/assets/icons/step.png" mode="aspectFit"></image>
+      <view class="title-container">
+        <text class="main-title">步数小助手</text>
+        <text class="sub-title">轻松设置运动目标</text>
+      </view>
+    </view>
+
+          <view class="link-item" bindtap="openOfficialAccountProfile">
+            <image class="link-icon" src="https://static.luozhinet.com/xcx/assets/icons/official.png"></image>
+            <view class="link-text">请务必关注我们的公众号，获得最新通知：开源栈</view>
+            <view class="link-arrow">></view>
+          </view>
+    <!-- 表单卡片 -->
+    <view class="form-card">
+      <!-- 账号类型选择 -->
+      <view class="form-section">
+        <view class="section-title">
+          <text class="section-text">账号类型</text>
+        </view>
+        <radio-group class="radio-group" bindchange="radioChange">
+          <label class="radio-item {{accountType === 'email' ? 'active' : ''}}">
+            <radio value="email" checked="{{accountType === 'email'}}" color="#4CAF50" />
+            <text>邮箱登录</text>
+          </label>
+          <label class="radio-item {{accountType === 'phone' ? 'active' : ''}}">
+            <radio value="phone" checked="{{accountType === 'phone'}}" color="#4CAF50" />
+            <text>手机号登录</text>
+          </label>
+        </radio-group>
+      </view>
+
+      <!-- 账号输入 -->
+      <view class="form-section">
+        <view class="section-title">
+          <text class="section-text">{{accountType === 'phone' ? '手机号' : '邮箱'}}</text>
+        </view>
+        <input class="form-input" type="{{accountType === 'phone' ? 'number' : 'text'}}" 
+          placeholder="{{accountType === 'phone' ? '请输入手机号' : '请输入邮箱'}}"
+          value="{{username}}" bindinput="inputUsername" maxlength="50" />
+      </view>
+
+      <!-- 密码输入 -->
+      <view class="form-section">
+        <view class="section-title">
+          <text class="section-text">密码</text>
+        </view>
+        <input class="form-input" type="password" placeholder="请输入密码" 
+          value="{{password}}" bindinput="inputPassword" maxlength="30" password="{{true}}" />
+      </view>
+
+      <!-- 步数设置 -->
+      <view class="form-section">
+        <view class="section-title">
+          <text class="section-text">目标步数</text>
+        </view>
+        <input class="form-input" type="number" placeholder="请输入步数 (如: 10000)" 
+          value="{{step}}" bindinput="inputStep" maxlength="6" />
+        <view class="steps-slider-container">
+          <slider class="steps-slider" min="1000" max="98800" step="1000" 
+            value="{{step}}" activeColor="#4CAF50" backgroundColor="#e9e9e9" 
+            bindchange="sliderChange" />
+          <view class="slider-values">
+            <text>1000</text>
+            <text class="current-value">{{step}}</text>
+            <text>98800</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 提交按钮 -->
+      <button class="submit-btn {{isLoading ? 'loading' : ''}}" bindtap="submitSteps" disabled="{{isLoading}}">
+        <text wx:if="{{!isLoading}}">立即设置</text>
+        <view wx:else class="loading-container">
+          <view class="loading-spinner"></view>
+          <text>处理中...</text>
+        </view>
+      </button>
+    </view>
+
+    <!-- 使用说明 -->
+    <view class="tips-card">
+      <view class="tips-header">
+        <text class="tips-title">使用说明</text>
+      </view>
+      <view class="tips-content">
+        <view class="tip-item">
+          <view class="tip-number">1</view>
+          <text class="tip-text">请确保您已注册账号，并已绑定微信或支付宝</text>
+        </view>
+        <view class="tip-item">
+          <view class="tip-number">2</view>
+          <text class="tip-text">输入您的账号和密码，选择目标步数</text>
+        </view>
+        <view class="tip-item">
+          <view class="tip-number">3</view>
+          <text class="tip-text">点击"立即设置"按钮，系统将自动更新您的运动数据</text>
+        </view>
+        <view class="tip-item">
+          <view class="tip-number">4</view>
+          <text class="tip-text">数据更新后，微信和支付宝的运动步数将同步更新</text>
+        </view>
+        <view class="tip-item warning">
+          <text class="tip-text">注意：本工具仅用于个人健康管理，请勿用于其他用途</text>
+        </view>
+          <view class="link-item" bindtap="viewArticle">
+            <image class="link-icon" src="https://static.luozhinet.com/xcx/assets/icons/article.png"></image>
+            <view class="link-text">立即查看详细教程</view>
+            <view class="link-arrow">></view>
+          </view>
+        </view>
+
+    </view>
+  </view>
+  
+  <!-- 处理结果弹窗 -->
+  <view class="modal-mask" wx:if="{{showResultModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">{{isSuccess ? '设置成功' : '设置失败'}}</text>
+      </view>
+      <view class="modal-body">
+        <icon class="modal-icon" type="{{isSuccess ? 'success' : 'warn'}}" size="45"></icon>
+        <text class="modal-message">{{resultMessage}}</text>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn" bindtap="closeResultModal">确定</button>
+      </view>
+    </view>
+  </view>
+</view> 

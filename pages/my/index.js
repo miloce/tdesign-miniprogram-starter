@@ -26,10 +26,14 @@ Page({
     },
     baseSettingList: [
       { name: '制作记录', desc: '历史制作的短链都在这里', icon: 'history', type: 'records', button: '查看' },
+      { name: '订单中心', desc: '支付订单、会员订单都在这里', icon: 'order-adjustment-column', type: 'orders', button: '查看' },
+      { name: '小助手', desc: '账号、密码与参数设置', icon: 'chat-bubble-smile', type: 'assistant', button: '进入' },
       { name: '联系客服', desc: '遇到问题跟客服说一下', icon: 'service', type: 'service', button: '咨询' },
     ],
     settingList: [
       { name: '制作记录', desc: '历史制作的短链都在这里', icon: 'history', type: 'records', button: '查看' },
+      { name: '订单中心', desc: '支付订单、会员订单都在这里', icon: 'order-adjustment-column', type: 'orders', button: '查看' },
+      { name: '小助手', desc: '账号、密码与参数设置', icon: 'chat-bubble-smile', type: 'assistant', button: '进入' },
       { name: '联系客服', desc: '遇到问题跟客服说一下', icon: 'service', type: 'service', button: '咨询' },
     ],
   },
@@ -54,7 +58,7 @@ Page({
 
     try {
       const res = await request('/code/profile');
-      const profile = res.data.data;
+      const profile = res.data;
       const isAdmin = profile.isAdmin || this.isAdminUser(this.data.userInfo);
       this.setData({
         profile,
@@ -78,6 +82,24 @@ Page({
       }
       wx.navigateTo({
         url: '/pages/my/records/index',
+      });
+      return;
+    }
+
+    if (item.type === 'assistant') {
+      wx.navigateTo({
+        url: '/pages/my/assistant/index',
+      });
+      return;
+    }
+
+    if (item.type === 'orders') {
+      if (!this.data.isLoggedIn) {
+        this.onLoginTap();
+        return;
+      }
+      wx.navigateTo({
+        url: '/pages/my/orders/index',
       });
       return;
     }
@@ -142,7 +164,7 @@ Page({
   },
 
   onCopyUid() {
-    const userInfo = this.data.userInfo;
+    const { userInfo } = this.data;
     if (!userInfo || !userInfo.id) {
       this.onLoginTap();
       return;
@@ -169,12 +191,12 @@ Page({
   refreshUserCard(loggedIn, userInfo = {}, profile = {}) {
     const quota = profile.quota !== undefined && profile.quota !== null
       ? profile.quota
-      : userInfo.people || userInfo.freeCount || 0;
+      : userInfo.quota || 0;
 
     this.setData({
       userCard: {
-        avatar: userInfo.avatar || userInfo.avatar_url || profile.avatar || '',
-        name: loggedIn ? userInfo.nickname || profile.name || '云栈点用户' : '请先登录',
+        avatar: profile.avatar || userInfo.avatar || '',
+        name: loggedIn ? profile.nickname || userInfo.nickname || '云栈点用户' : '请先登录',
         uid: loggedIn ? userInfo.id || '无' : '无',
         memberText: loggedIn ? profile.vipText || '普通用户' : '游客用户',
         quotaText: loggedIn ? String(quota) : '0',
@@ -183,18 +205,18 @@ Page({
   },
 
   updateStoredUserFromProfile(profile = {}) {
-    const userInfo = wx.getStorageSync('userinfo') || {};
+    const userInfo = wx.getStorageSync('userInfo') || {};
     const next = {
       ...userInfo,
-      nickname: userInfo.nickname || profile.name,
-      avatar: userInfo.avatar || profile.avatar,
-      people: profile.quota !== undefined ? profile.quota : userInfo.people,
-      scorings: profile.points !== undefined ? profile.points : userInfo.scorings,
+      nickname: profile.nickname || userInfo.nickname,
+      avatar: profile.avatar || userInfo.avatar,
+      quota: profile.quota !== undefined ? profile.quota : userInfo.quota,
+      points: profile.points !== undefined ? profile.points : userInfo.points,
       isVip: profile.isVip !== undefined ? profile.isVip : userInfo.isVip,
-      is_vip: profile.isVip !== undefined ? profile.isVip : userInfo.is_vip,
+      isAdmin: profile.isAdmin !== undefined ? profile.isAdmin : userInfo.isAdmin,
       vipInfo: profile.vipInfo || userInfo.vipInfo,
     };
-    wx.setStorageSync('userinfo', next);
+    wx.setStorageSync('userInfo', next);
     const app = getApp();
     if (app && app.globalData) {
       app.globalData.userInfo = next;
@@ -217,7 +239,7 @@ Page({
   },
 
   isAdminUser(userInfo = {}) {
-    return userInfo.openid === ADMIN_OPENID || wx.getStorageSync('access_token') === ADMIN_OPENID || userInfo.is_admin;
+    return userInfo.openid === ADMIN_OPENID || wx.getStorageSync('access_token') === ADMIN_OPENID || userInfo.isAdmin;
   },
 
 });

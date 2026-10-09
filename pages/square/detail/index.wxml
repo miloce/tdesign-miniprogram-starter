@@ -1,0 +1,82 @@
+<nav title-text="动态详情" />
+
+<view class="detail-page">
+  <scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+    <view class="user-header">
+      <view class="user-info">
+        <t-avatar image="{{post.authorAvatar}}" icon="user" size="large" />
+        <view class="user-details">
+          <view class="username">{{post.authorName || '匿名用户'}}</view>
+          <view class="bmi-info">{{post.timeText}} · {{post.typeLabel || '广场'}}</view>
+        </view>
+      </view>
+      <view class="status-chip">{{post.status}}</view>
+    </view>
+
+    <view class="content-box">
+      <view class="content">
+        <view wx:if="{{post.title && post.title !== post.content}}" class="content-title">{{post.title}}</view>
+        <view class="content-text">{{post.content}}</view>
+      </view>
+
+      <view wx:if="{{post.images.length}}" class="images-container">
+        <view
+          wx:for="{{post.images}}"
+          wx:key="*this"
+          class="image-item"
+          data-src="{{item}}"
+          data-urls="{{post.images}}"
+          bindtap="onPreviewImage"
+        >
+          <image src="{{item}}" mode="aspectFill" />
+        </view>
+      </view>
+
+      <view wx:if="{{post.tags}}" class="tags-container">
+        <view class="tag tag-check">#{{post.tags}}</view>
+      </view>
+      <view class="divider" />
+    </view>
+
+    <view class="comments-section">
+      <view class="comments-header">
+        <view class="comments-title">评论 {{post.commentCount}}</view>
+      </view>
+
+      <view wx:for="{{post.comments}}" wx:key="id" class="comment-item">
+        <t-avatar image="{{item.authorAvatar}}" icon="user" size="medium" />
+        <view class="comment-content">
+          <view class="comment-header">
+            <view class="comment-username">{{item.authorName || '匿名用户'}}</view>
+            <view class="comment-time">{{item.timeText}}</view>
+          </view>
+          <view class="comment-text">{{item.content}}</view>
+        </view>
+      </view>
+
+      <t-empty wx:if="{{!loading && post.comments.length === 0}}" description="暂无评论" />
+    </view>
+  </scroll-view>
+
+  <view class="bottom-bar">
+    <view class="bottom-input-row">
+      <input
+        class="comment-input"
+        value="{{commentText}}"
+        placeholder="说点什么"
+        bindinput="onCommentInput"
+        confirm-type="send"
+        bindconfirm="submitComment"
+      />
+      <view class="action-item {{post.supervised ? 'active' : ''}}" bindtap="onSuperviseTap">
+        <t-icon name="check-circle" size="34rpx" />
+        <text class="action-text">{{post.superviseCount}}</text>
+      </view>
+      <view class="action-item {{post.liked ? 'active' : ''}}" bindtap="onLikeTap">
+        <t-icon name="thumb-up" size="34rpx" />
+        <text class="action-text">{{post.likes}}</text>
+      </view>
+      <button class="send-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitComment">发送</button>
+    </view>
+  </view>
+</view>

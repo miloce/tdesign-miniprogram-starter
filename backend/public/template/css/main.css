@@ -1,0 +1,28 @@
+body,html,p,*{margin:0;padding:0;overflow:hidden}.iframe-div{width:100%;height:100%;border:none}
+#container{width: 100vw; margin: 0 auto; position: relative; height: 100vh;}
+@media (max-width: 768px) { #container {width: 100vw;} }
+
+/*按钮样式*/
+#makeLink,#moreLink{display:none;position:fixed;width:8.5vw;height:8.5vw;border:.5vw solid #fff;border-radius:50%;font-size:3.4vw;line-height:8.5vw;text-align:center;z-index:999;background-color:rgba(0,0,0,.3);right:3vw;cursor:pointer;color:#fff;text-decoration:none;transition:opacity .3s ease,transform .15s ease,box-shadow .3s ease;animation:fadestart .6s ease both .15s}
+#moreLink{display:none;bottom:12vw}
+#makeLink{bottom:26vw}
+#musicBtn{display:none;position:fixed;cursor:pointer;width:8vw;height:8vw;border:none;border-radius:50%;text-align:center;z-index:999;top:3vw;right:3vw}
+#musicBtn img{width: 100%;}.roll{animation:1s linear 0s infinite normal none running music_play_rotate}
+@-webkit-keyframes music_play_rotate{0%{-webkit-transform:rotate(0)}100%{-webkit-transform:rotate(360deg)}}@keyframes fadestart{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/*模板打开样式*/
+.open-main{background-color:#000;position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#000;font-size:15px}.open-main p{font-size:1.2rem;font-weight:800;margin:1rem}.open-main img{width:7rem;margin-bottom:2rem;animation-name:heartbeat;animation-duration:2s;animation-timing-function:cubic-bezier(0,0,0,1.74);animation-delay:.5s;animation-iteration-count:infinite;animation-play-state:running}@keyframes heartbeat{0%{transform:scale(.95)}100%{transform:scale(.95)}50%{transform:scale(1)}}
+
+/*open的样式css*/
+.liwu img{color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:5rem!important;margin:0 auto 150px}.liwu .text{font-size:1.2rem;color:#000;word-wrap:break-word;overflow-wrap:break-word;text-align:center;margin:-8rem auto 0 auto}.liwu p{text-align:center}.liwu .btn{background-color:#07c160;color:#fff;border:none;padding:.7rem 3.2rem;font-size:1.2rem;cursor:pointer;margin-top:3rem;margin-bottom:4rem;border-radius:10px}
+
+/*alert的样式css*/
+.swal-overlay{position:fixed;top:0;bottom:0;left:0;right:0;text-align:center;font-size:0;overflow-y:auto;background-color:rgb(173 173 173);z-index:10000;pointer-events:none;opacity:0;transition:opacity .3s;display:block;}.swal-overlay:before{content:" ";display:inline-block;vertical-align:middle;height:100%}.swal-overlay--show-modal{opacity:1;pointer-events:auto}.swal-overlay--show-modal .swal-modal{opacity:1;pointer-events:auto;box-sizing:border-box;-webkit-animation:showSweetAlert .3s;animation:showSweetAlert .3s;will-change:transform}.swal-modal{width:478px;opacity:0;pointer-events:none;background-color:#fff;text-align:center;border-radius:5px;position:static;margin:20px auto;display:inline-block;vertical-align:middle;-webkit-transform:scale(1);transform:scale(1);-webkit-transform-origin:50% 50%;transform-origin:50% 50%;z-index:10001;transition:opacity .2s,-webkit-transform .3s;transition:transform .3s,opacity .2s;transition:transform .3s,opacity .2s,-webkit-transform .3s}@media (max-width:500px){.swal-modal{width:calc(100% - 30px)}}@-webkit-keyframes showSweetAlert{0%{-webkit-transform:scale(1);transform:scale(1)}1%{-webkit-transform:scale(.5);transform:scale(.5)}45%{-webkit-transform:scale(1.05);transform:scale(1.05)}80%{-webkit-transform:scale(.95);transform:scale(.95)}to{-webkit-transform:scale(1);transform:scale(1)}}@keyframes showSweetAlert{0%{-webkit-transform:scale(1);transform:scale(1)}1%{-webkit-transform:scale(.5);transform:scale(.5)}45%{-webkit-transform:scale(1.05);transform:scale(1.05)}80%{-webkit-transform:scale(.95);transform:scale(.95)}to{-webkit-transform:scale(1);transform:scale(1)}}.swal-icon:first-child{margin-top:32px;}.swal-icon{width:80px;height:80px;border-width:4px;border-style:solid;border-radius:50%;padding:0;position:relative;box-sizing:content-box;margin:20px auto;}.swal-icon--warning{border-color:#f8bb86;-webkit-animation:pulseWarning .75s infinite alternate;animation:pulseWarning .75s infinite alternate;}.swal-text{font-size:16px;position:relative;float:none;line-height:normal;vertical-align:top;text-align:center;display:inline-block;margin:0;padding:0 10px;font-weight:400;color:rgba(0,0,0,.64);max-width:calc(100% - 20px);overflow-wrap:break-word;box-sizing:border-box;}.swal-footer{text-align:right;padding-top:13px;margin-top:13px;padding:13px 16px;border-radius:inherit;border-top-left-radius:0;border-top-right-radius:0;}.swal-button-container{margin:5px;display:inline-block;position:relative;}.swal-button{background-color:#7cd1f9;color:#fff;border:none;box-shadow:none;border-radius:5px;font-weight:600;font-size:14px;padding:10px 24px;margin:0;cursor:pointer;}.swal-icon--warning{border-color:#f8bb86;-webkit-animation:pulseWarning .75s infinite alternate;animation:pulseWarning .75s infinite alternate}.swal-icon--warning__body{width:5px;height:47px;top:10px;border-radius:2px;margin-left:-2px}.swal-icon--warning__body,.swal-icon--warning__dot{position:absolute;left:50%;background-color:#f8bb86}.swal-icon--warning__dot{width:7px;height:7px;border-radius:50%;margin-left:-4px;bottom:-11px}.swal-button-container{border:solid 2px #C7D6E4;border-radius:6px;padding:1px;}
+
+/*适配电脑端样式*/
+@media (min-width: 500px) {
+    #musicBtn{width: 3rem;height: 3rem;right: 1.3rem;top: 1.3rem;}
+    #makeLink {bottom: 10rem}
+    #moreLink {bottom: 5rem}
+    #makeLink, #moreLink{width: 3rem;height: 3rem;right: 1.3rem;font-size: 1.1rem;line-height: 3rem;border: 0.2rem solid #fff;}
+}

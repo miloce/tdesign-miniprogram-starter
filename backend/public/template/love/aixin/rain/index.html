@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>❤️</title>
+    <meta name="viewport" content="width=500, target-densitydpi=device-dpi, user-scalable=0">
+    <style type="text/css">
+        body { margin: 0; padding: 0; overflow: auto; } html, body { height: 100%; padding: 0; margin: 0; background: rgb(0, 0, 0); } #contentToWrite{width: 60%; font-size: 2.2em;font-weight:bold; text-align: center;color: #f584b7;; z-index: 9999; overflow: auto; height: auto%; overflow-x: hidden; padding-bottom: 50px; position: absolute; left: 49%; top: 44%; transform: translate(-48%, 0);display:block;}
+    </style>
+    <script src="/template/common/js/main.js?v1004" defer></script>
+</head>
+<body overflow-x:hidden;overflow-y:hidden;>
+    
+<div id="contentToWrite"></div>
+
+<script src="/template/common/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+    var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    
+    //启用插件
+    dataInfo.plugin = {}
+    
+    //文字雨插件配置信息
+    dataInfo.plugin.textRain = {
+        color: '#f584b7',
+        text: dataInfo.ftitle,
+        fontSize: 18,
+        opacity: 0.7
+    };
+    
+    //跳动爱心插件配置信息
+    dataInfo.plugin.aixin1 = {
+        color: '#f584b7',
+    };
+
+    document.getElementById("contentToWrite").innerText = dataInfo.content;
+</script>
+<script src="/template/common/js/textRain.js?v3003"></script>
+<script src="/template/common/js/aixin1.js?v3003"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<nav title-text="广场" />
+
+<view class="square-page">
+  <view class="module-section">
+    <scroll-view class="module-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view
+        wx:for="{{categories}}"
+        wx:key="value"
+        class="module-item {{activeType === item.value ? 'module-item--active' : ''}}"
+        data-type="{{item.value}}"
+        bindtap="onTypeTap"
+      >
+        <view class="module-icon">
+          <text>{{item.short}}</text>
+        </view>
+        <view class="module-text">{{item.label}}</view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="posts-container">
+    <view
+      wx:for="{{filteredPosts}}"
+      wx:key="id"
+      class="post-item"
+      data-id="{{item.id}}"
+      bindtap="onPostTap"
+    >
+      <view class="user-info">
+        <view class="avatar-container">
+          <t-avatar image="{{item.authorAvatar}}" icon="user" size="medium" />
+        </view>
+        <view class="user-details">
+          <view class="user-name-row">
+            <view class="user-name">{{item.authorName || '匿名用户'}}</view>
+            <view class="verified-badge">✓</view>
+          </view>
+          <view class="user-info-text">{{item.timeText}} · {{item.typeLabel}}</view>
+        </view>
+        <view class="status-chip">{{item.status}}</view>
+      </view>
+
+      <view class="post-content">
+        <view wx:if="{{item.title && item.title !== item.content}}" class="content-title">{{item.title}}</view>
+        <view class="content-text">{{item.content}}</view>
+      </view>
+
+      <view wx:if="{{item.images.length}}" class="images-container">
+        <view
+          wx:for="{{item.images}}"
+          wx:for-item="image"
+          wx:key="*this"
+          class="image-wrapper {{item.images.length === 1 ? 'single-image' : ''}}"
+          data-src="{{image}}"
+          data-urls="{{item.images}}"
+          catchtap="onPreviewImage"
+        >
+          <image class="post-image" src="{{image}}" mode="aspectFill" />
+        </view>
+      </view>
+
+      <view wx:if="{{item.tags}}" class="tags-container">
+        <text class="tag tag-success">#{{item.tags}}</text>
+      </view>
+
+      <view class="interaction-bar">
+        <view class="comment-count" data-id="{{item.id}}" catchtap="onCommentTap">{{item.commentCount}} 条评论</view>
+        <view class="interaction-buttons">
+          <view
+            class="interaction-btn {{item.supervised ? 'active' : ''}}"
+            data-id="{{item.id}}"
+            catchtap="onSuperviseTap"
+          >
+            <t-icon name="check-circle" size="32rpx" />
+            <text class="count">{{item.superviseCount}}</text>
+          </view>
+          <view
+            class="interaction-btn {{item.liked ? 'active' : ''}}"
+            data-id="{{item.id}}"
+            catchtap="onLikeTap"
+          >
+            <t-icon name="thumb-up" size="32rpx" />
+            <text class="count">{{item.likes}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <t-empty wx:if="{{!loading && filteredPosts.length === 0}}" description="暂无动态" />
+  </view>
+
+  <view class="publish-button-container">
+    <button class="publish-button" bindtap="onPublish">
+      <text class="publish-text">发布动态</text>
+    </button>
+  </view>
+</view>

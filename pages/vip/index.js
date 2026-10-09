@@ -1,5 +1,6 @@
 import request from '~/api/request';
 import { isLoggedIn } from '~/utils/auth';
+import { createVirtualPaymentOrder, invokeVirtualPayment, isVirtualPaymentCancelled } from './virtualPayment';
 
 Page({
   data: {
@@ -21,12 +22,16 @@ Page({
   },
 
   async loadPackages() {
-    const res = await request('/vip/packages');
-    const packages = res.data.data || [];
-    this.setData({
-      packages,
-      selectedPackageId: packages[0] ? packages[0].id : '',
-    });
+    try {
+      const res = await request('/vip/packages');
+      const packages = res.data || [];
+      this.setData({
+        packages,
+        selectedPackageId: packages[0] ? packages[0].id : '',
+      });
+    } catch (err) {
+      wx.showToast({ title: (err && err.message) || '会员套餐加载失败', icon: 'none' });
+    }
   },
 
   selectPackage(e) {
@@ -42,7 +47,7 @@ Page({
   },
 
   openAgreement(e) {
-    const type = e.currentTarget.dataset.type;
+    const { type } = e.currentTarget.dataset;
     wx.navigateTo({
       url: `/pages/agreement/index?type=${type || 'user'}`,
     });
@@ -64,25 +69,30 @@ Page({
       return;
     }
 
-    wx.showLoading({ title: '正在发起支付' });
-    try {
-      const res = await request('/vip/pay', 'POST', { packageId: this.data.selectedPackageId });
-      const params = res.data.data;
+    let loadingVisible = false;
+    const hideLoading = () => {
+      if (!loadingVisible) return;
+      loadingVisible = false;
       wx.hideLoading();
+    };
 
-      await new Promise((resolve, reject) => {
-        wx.requestPayment({
-          timeStamp: params.timeStamp,
-          nonceStr: params.nonceStr,
-          package: params.package,
-          signType: params.signType,
-          paySign: params.paySign,
-          success: resolve,
-          fail: (err) => reject(err),
-        });
+    wx.showLoading({ title: '正在发起支付' });
+    loadingVisible = true;
+    try {
+      const params = await createVirtualPaymentOrder('/vip/pay', {
+        packageId: this.data.selectedPackageId,
       });
+      hideLoading();
+
+      if (!params.paid) {
+        await invokeVirtualPayment(params);
+      }
 
       const confirmRes = await this.confirmPayment(params.outTradeNo);
+      if (!confirmRes || confirmRes.paid === false) {
+        wx.showToast({ title: '支付确认中，请稍后刷新', icon: 'none' });
+        return;
+      }
       if (confirmRes && confirmRes.userInfo) {
         this.updateStoredUser(confirmRes.userInfo);
       }
@@ -90,13 +100,13 @@ Page({
       wx.showToast({ title: '支付成功', icon: 'success' });
       setTimeout(() => wx.navigateBack(), 1500);
     } catch (err) {
-      wx.hideLoading();
-      const errMsg = (err && err.errMsg) || '';
-      if (errMsg.includes('cancel')) {
+      if (isVirtualPaymentCancelled(err)) {
         wx.showToast({ title: '已取消支付', icon: 'none' });
       } else {
-        wx.showToast({ title: '支付失败，请重试', icon: 'none' });
+        wx.showToast({ title: err.message || '支付失败，请重试', icon: 'none' });
       }
+    } finally {
+      hideLoading();
     }
   },
 
@@ -105,34 +115,47 @@ Page({
       return this.refreshVipStatus();
     }
 
-    for (let i = 0; i < 3; i += 1) {
-      const res = await request('/vip/confirm', 'POST', { outTradeNo });
-      const data = res.data.data || {};
-      if (data.paid) {
-        return data;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 800));
+    return this.confirmPaymentWithRetry(outTradeNo, 3);
+  },
+
+  async confirmPaymentWithRetry(outTradeNo, retryCount) {
+    const res = await request('/vip/confirm', 'POST', { outTradeNo });
+    const data = res.data || {};
+    if (data.paid) {
+      return data;
     }
 
-    return this.refreshVipStatus();
+    if (retryCount <= 1) {
+      return this.refreshVipStatus();
+    }
+
+    await this.wait(800);
+    return this.confirmPaymentWithRetry(outTradeNo, retryCount - 1);
+  },
+
+  wait(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
   },
 
   async refreshVipStatus() {
     const res = await request('/vip/status');
-    return res.data.data || {};
+    return res.data || {};
   },
 
   updateStoredUser(userInfo) {
-    const current = wx.getStorageSync('userinfo') || {};
+    const current = wx.getStorageSync('userInfo') || {};
     const next = {
       ...current,
       ...userInfo,
-      people: userInfo.people !== undefined ? userInfo.people : current.people,
+      quota: userInfo.quota !== undefined ? userInfo.quota : current.quota,
+      points: userInfo.points !== undefined ? userInfo.points : current.points,
       isVip: userInfo.isVip !== undefined ? userInfo.isVip : current.isVip,
-      is_vip: userInfo.is_vip !== undefined ? userInfo.is_vip : current.is_vip,
+      isAdmin: userInfo.isAdmin !== undefined ? userInfo.isAdmin : current.isAdmin,
       vipInfo: userInfo.vipInfo || current.vipInfo,
     };
-    wx.setStorageSync('userinfo', next);
+    wx.setStorageSync('userInfo', next);
 
     const app = getApp();
     if (app && app.globalData) {

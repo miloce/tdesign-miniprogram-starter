@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>❤️</title>
+    <meta name="viewport" content="width=500, target-densitydpi=device-dpi, user-scalable=0">
+    <style type="text/css">
+         #contentToWrite{width: 60%; font-size: 2.2em; text-align: center;color: pink;; z-index: 9999; overflow: auto; height: auto%; overflow-x: hidden; padding-bottom: 50px; position: absolute; left: 49%; top: 44%; transform: translate(-48%, 0);display:block;}
+    </style>
+    <script src="/template/common/js/main.js?v1004" defer></script>
+</head>
+<body overflow-x:hidden;overflow-y:hidden;>
+    
+<div id="contentToWrite"></div>
+
+<script src="/template/common/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+    var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    
+    //启用插件
+    dataInfo.plugin = {}
+    
+    //跳动爱心插件配置信息
+    dataInfo.plugin.aixin1 = {
+        color: '#f584b7',
+    };
+    
+    //闪烁爱心插件配置信息
+    dataInfo.plugin.textFlicker = {
+        text : "♡",
+        count: 500,
+        color: '#EA80AF',
+        fontSize: '20',
+    };
+    
+    //流星雨插件配置信息
+    dataInfo.plugin.meteorRain = {
+        count: 20,
+        color: '#ea80b0',
+        opacity: 0.1,
+    };
+    
+    //打印文字插件配置信息
+    dataInfo.plugin.printText = {
+        padding: '3rem 2rem 0rem 2rem',
+        text: dataInfo.content,
+        fontSize: '1.3rem',
+        lineHeight: '2rem',
+        color: dataInfo.color ? dataInfo.color : '#FFF',
+        autoPrint: dataInfo.msgHtml ? false : true,
+    }
+    
+    document.getElementById("contentToWrite").innerText = dataInfo.ftitle;
+    
+    
+    
+    /*
+    //修改透明度+背景图片
+    var opacity = 1 - dataInfo.opacity / 100;
+    document.body.style.setProperty('--overlay-bg', 'rgba(0,0,0,'+ opacity +')');
+    dataInfo?.backgroundImg && (document.body.style.background = `url("${encodeURI(dataInfo.backgroundImg)}") center center / cover no-repeat`);
+    */
+</script>
+
+<script src="/template/common/js/aixin1.js?v3003"></script>
+<script src="/template/common/js/textFlicker.js?v30031248"></script>
+<script src="/template/common/js/meteorRain.js?v300312480"></script>
+<script src="/template/common/js/printText.js?v30350127"></script>
+<script>
+    //打开事件
+    function onOpenClcik(){
+        printText();
+    }
+</script>
+</body>
+</html>

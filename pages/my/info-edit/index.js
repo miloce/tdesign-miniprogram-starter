@@ -51,7 +51,7 @@ Page({
     request('/api/genPersonalInfo').then((res) => {
       this.setData(
         {
-          personInfo: res.data.data,
+          personInfo: res.data,
         },
         () => {
           const { personInfo } = this.data;

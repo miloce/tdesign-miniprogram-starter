@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/template/barrage/alert/styles.css">
+  <script src="/template/common/js/main.js?v1004" defer></script>
+</head>
+<body>
+  <div id="app">
+    <div id="popup-layer" aria-live="polite" aria-atomic="false"></div>
+  </div>
+  <div id="snowflakes"></div>
+  <audio id="bgMusic" preload="auto" loop></audio>
+  
+<script src="/template/barrage/alert/app.js?v10223"></script>
+<script>
+    let dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    
+    dataInfo.content = replaceDayWithRemainingDays(dataInfo.content);
+    let messages = dataInfo.content.split("\r\n");//
+    
+    console.log(messages);
+    let tipTitle = dataInfo.title;//'💝 提示'
+    
+    const bgMusic = document.getElementById("bgMusic");
+    function randomOf(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    
+    //下面这些nid随机音乐
+    const nidsToCheck = [950];
+    if (nidsToCheck.includes(Number(dataInfo.nid))) {
+        console.log("随机音乐");
+        let musicUrls = [
+            "https://sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7499771397531503370.mp3",
+            "https://sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7545894243693316874.mp3",
+            "https://lf3-music-east.douyinstatic.com/obj/ies-music-hj/7558485785163402041.mp3",
+            "https://sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/7538982702662699786.mp3"
+        ];
+        bgMusic.src = randomOf(musicUrls);
+    }else{
+        console.log(dataInfo.nid + "指定音乐");
+        //bgMusic.src = dataInfo.music;
+    }
+    
+    //打开事件
+    function onOpenClcik(){
+        startExperience();
+        // 播放背景音乐
+        bgMusic.volume = 0.6; // 设置音量为60%
+        bgMusic.loop = true; // 循环播放
+        bgMusic.play().catch(err => {
+            console.log("音频播放失败:", err);
+        });
+    }
+    
+    // 核心转换函数
+    function replaceDayWithRemainingDays(text) {
+        const dayReg = /\[DAY:(\d{8})\]/g;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        return text.replace(dayReg, (match, dateStr) => {
+            const year = parseInt(dateStr.slice(0, 4));
+            const month = parseInt(dateStr.slice(4, 6)) - 1;
+            const day = parseInt(dateStr.slice(6, 8));
+            
+            const targetDate = new Date(year, month, day);
+            targetDate.setHours(0, 0, 0, 0);
+            
+            const timeDiff = targetDate - today;
+            const remainingDays = Math.ceil(timeDiff / 86400000);
+            return Math.max(remainingDays, 0);
+        });
+    }
+    
+
+</script>
+</body>
+</html>

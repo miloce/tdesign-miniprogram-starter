@@ -114,3 +114,19 @@ project.private.config.json
 # WeChat Pay merchant private keys
 backend/certs/apiclient_key.pem
 backend/certs/apiclient_cert.pem
+
+# 服务器 SSH 私钥与所有证书密钥，绝不入库
+backend/root.pem
+*.pem
+
+# 微信支付/开放平台密钥与证书，绝不入库
+backend/*密钥.txt
+backend/*密钥*
+backend/*.cer
+backend/*.key
+
+# 本地工作数据（AI 会话记忆等）
+.workbuddy/
+
+# 网页抓取脚本产生的畸形文件名（Windows 下尾部空格无法正常索引）
+backend/public/template/**/null ==*

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>收到一封来信</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="/template/common/js/jquery-2.1.4.min.js"></script>
+
+    <style>
+        :root { --pink: #ff4d6d; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        body {
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; justify-content: center; align-items: center;
+            background-color: #eeeae4; position: relative;
+        }
+
+
+
+        #scene { position: relative; width: 100%; height: 100%; z-index: 10; }
+
+        .envelope-wrapper { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); text-align: center; cursor: pointer; width: 100%; }
+        .envelope-title {
+            font-size: 20px; color: #333; margin-bottom: 25px; letter-spacing: 3px; font-weight: bold;
+            background: rgba(255,255,255,0.7); display: inline-block; padding: 6px 18px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .envelope {
+            width: 210px; height: 135px; background: #e0c3a1; position: relative; margin: 0 auto;
+            border-radius: 6px; box-shadow: 0 12px 25px rgba(0,0,0,0.2); 
+            animation: shake 2.5s infinite ease-in-out; transform-origin: center;
+        }
+
+        .envelope::after { 
+            content: ''; position: absolute; top: 0; left: 0; 
+            border-left: 105px solid transparent; border-right: 105px solid transparent; border-top: 70px solid #ecd5b5; 
+        }
+
+        .envelope::before { 
+            content: ''; position: absolute; bottom: 0; left: 0; 
+            border-left: 105px solid #d4b085; border-right: 105px solid #d4b085; border-bottom: 75px solid transparent; 
+            z-index: 2; border-radius: 0 0 6px 6px; 
+        }
+
+        .click-hint { position: absolute; top: 52%; left: 55%; width: 22px; height: 22px; z-index: 5; animation: pointerMove 1.5s infinite; }
+        .click-hint svg { fill: #fff; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); }
+
+        @keyframes shake { 0%,20%,100% { transform: rotate(0deg); } 5%,15% { transform: rotate(2deg); } 10% { transform: rotate(-2deg); } }
+        @keyframes pointerMove { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-6px, -6px); } }
+
+        .letter-view {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            justify-content: center; align-items: center; opacity: 0; transition: opacity 1s; padding: 20px; z-index: 20;
+        }
+
+        .paper-card {
+            width: 100%; max-width: 500px; height: auto; max-height: 85vh;
+            background: #fff; padding: 30px 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+            display: flex; flex-direction: column; border-radius: 4px; position: relative;
+        }
+
+        .paper-header { font-family: 'Ma Shan Zheng', cursive; font-size: 20px; margin-bottom: 10px; color: #444; font-weight: bold; }
+
+        .paper-body {
+            flex: 1; overflow-y: auto; z-index: 1; font-family: 'Ma Shan Zheng', cursive;
+            font-size: 18px; line-height: 36px !important; color: #222;
+            white-space: pre-wrap; text-align: justify; min-height: 180px;
+            background-image: repeating-linear-gradient(transparent 0px, transparent 35px, #e5e5e5 35px, #e5e5e5 36px);
+            background-attachment: local; padding-top: 2px;
+        }
+
+        .cursor::after { content: ''; display: inline-block; width: 2px; height: 1em; background: #333; margin-left: 2px; vertical-align: middle; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .paper-footer { font-family: 'Ma Shan Zheng', cursive; margin-top: 20px; text-align: right; font-size: 18px; color: #666; opacity: 0; transition: opacity 1s; }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" src="" loop></audio>
+
+    <div id="scene">
+        <div class="envelope-wrapper" id="envelopeWrapper">
+            <div class="envelope-title">收到一封来信</div>
+            <div class="envelope">
+                <div class="click-hint">
+                    <svg viewBox="0 0 24 24"><path d="M7 2l12 11.2-5.8.5 3.3 7.3-2.2.9-3.2-7.4-4.4 4V2z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="letter-view" id="letterView">
+            <div class="paper-card">
+                <div class="paper-header" id="displayHeader"></div>
+                <div class="paper-body cursor" id="displayContent"></div>
+                <div class="paper-footer" id="displayFooter"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+        console.log("dataInfo", dataInfo);
+        const config = {
+            header: dataInfo.title || "To: 亲爱的你",
+            text: dataInfo.content || "见字如面，愿你天天开心。",
+            footer: dataInfo.ftitle || "",
+            speed: 100
+        };
+        
+        
+        $(document).ready(function() {
+            
+            const style = document.createElement('style');
+    
+            style.textContent = `
+                html, body {
+                    margin: 0;
+                    width: 100%;
+                    height: 100%;
+                }
+                body::before {
+                    content: "";
+                    position: fixed;
+                    inset: 0;
+                    background: var(--overlay-bg, rgba(255,255,255,.75)); /* 默认 .75 */
+                }
+            `;
+            document.head.appendChild(style);
+            
+            
+            // 检查 dataInfo 是否存在
+            if (typeof dataInfo === 'undefined' || !dataInfo) return;
+        
+            // 透明度设置：dataInfo.opacity 是 0~100
+            var opacity = 1 - dataInfo.opacity / 100;
+            document.body.style.setProperty('--overlay-bg', 'rgba(255,255,255,' + opacity + ')');
+        
+            // 如果存在背景图字段
+            if (dataInfo.backgroundImg) {
+                document.body.style.background = `url("${encodeURI(dataInfo.backgroundImg)}") center center / cover no-repeat`;
+            }
+    
+    
+            $('#bgMusic').attr('src', dataInfo.music);
+            
+            $('#envelopeWrapper').on('click', function() {
+                // --- 播放音乐逻辑 ---
+                const audio = document.getElementById('bgMusic');
+                audio.play().catch(e => console.log("播放失败，请检查资源链接或交互策略:", e));
+
+                // 执行信封开启效果
+                $(this).css({
+                    'opacity': '0',
+                    'transform': 'translate(-50%, -50%) scale(1.5)',
+                    'pointer-events': 'none'
+                });
+
+                setTimeout(() => {
+                    $(this).hide();
+                    $('#letterView').css('display', 'flex');
+                    setTimeout(() => {
+                        $('#letterView').css('opacity', '1');
+                        $('#displayHeader').text(config.header);
+                        startTyping();
+                    }, 50);
+                }, 500);
+            });
+        });
+
+        function startTyping() {
+            const $content = $('#displayContent');
+            const $footer = $('#displayFooter');
+            let i = 0;
+
+            const timer = setInterval(() => {
+                if (i < config.text.length) {
+                    const char = config.text.charAt(i);
+                    $content.append(char === '\n' ? '<br>' : char);
+                    const body = $content[0];
+                    body.scrollTop = body.scrollHeight;
+                    i++;
+                } else {
+                    clearInterval(timer);
+                    $content.removeClass('cursor');
+                    $footer.text(config.footer).css('opacity', 1);
+                }
+            }, config.speed);
+        }
+    </script>
+</body>
+</html>

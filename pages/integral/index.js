@@ -7,7 +7,7 @@ Page({
     isEarn: true,
     isRecord: false,
     isExchange: false,
-    currentPoints: 0,
+    points: 0,
     isVip: false,
     isVipText: 'VIP会员可以无限制制作代码',
     paymentEnabled: true,
@@ -17,12 +17,9 @@ Page({
     exchangeItems: [],
     selectedExchangeIndex: 0,
     selectedExchangeId: '',
+    rewardAdUnitId: '',
+    earningType: '',
     showLogin: false,
-  },
-
-  onLoad() {
-    if (!this.ensureLogin()) return;
-    this.loadIntegral();
   },
 
   onShow() {
@@ -37,26 +34,39 @@ Page({
     return false;
   },
 
-  async loadIntegral() {
-    const res = await request('/points/summary');
-    const data = res.data.data;
-    const firstExchange = data.exchangeItems[0] || {};
+  loadIntegral() {
+    if (this.loadIntegralPromise) return this.loadIntegralPromise;
 
-    this.setData({
-      currentPoints: data.currentPoints,
-      isVip: data.isVip,
-      isVipText: data.isVip ? '您是VIP会员' : 'VIP会员可以无限制制作代码',
-      paymentEnabled: data.paymentEnabled,
-      pointRecords: data.records,
-      earnOptions: data.earnOptions,
-      exchangeItems: data.exchangeItems,
-      selectedExchangeIndex: 0,
-      selectedExchangeId: firstExchange.id || '',
-    });
+    this.loadIntegralPromise = request('/points/summary')
+      .then((res) => {
+        const data = res.data || {};
+        const exchangeItems = Array.isArray(data.exchangeItems) ? data.exchangeItems : [];
+        const firstExchange = exchangeItems[0] || {};
+        this.setData({
+          points: data.points || 0,
+          isVip: Boolean(data.isVip),
+          isVipText: data.isVip ? '您是VIP会员' : 'VIP会员可以无限制制作代码',
+          paymentEnabled: Boolean(data.paymentEnabled),
+          rewardAdUnitId: data.rewardAdUnitId || '',
+          pointRecords: Array.isArray(data.records) ? data.records : [],
+          earnOptions: Array.isArray(data.earnOptions) ? data.earnOptions : [],
+          exchangeItems,
+          selectedExchangeIndex: 0,
+          selectedExchangeId: firstExchange.id || '',
+        });
+      })
+      .catch((err) => {
+        wx.showToast({ title: (err && err.message) || '积分数据加载失败', icon: 'none' });
+      })
+      .finally(() => {
+        this.loadIntegralPromise = null;
+      });
+
+    return this.loadIntegralPromise;
   },
 
   switchTab(e) {
-    const tab = e.currentTarget.dataset.tab;
+    const { tab } = e.currentTarget.dataset;
     this.setData({
       activeTab: tab,
       isEarn: tab === 'earn',
@@ -68,7 +78,7 @@ Page({
   showExchangeRules() {
     wx.showModal({
       title: '积分兑换规则',
-      content: '积分可通过签到、观看广告、邀请好友获得，可兑换制作次数或VIP会员。',
+      content: '积分可通过签到、观看激励广告（开启后）、邀请好友获得，可兑换制作次数或VIP会员。',
       showCancel: false,
     });
   },
@@ -94,26 +104,34 @@ Page({
     const item = this.data.exchangeItems[this.data.selectedExchangeIndex];
     if (!item) return;
 
-    if (this.data.currentPoints < item.points) {
+    if (this.data.points < item.points) {
       wx.showToast({ title: '积分不足', icon: 'none' });
       return;
     }
 
-    const res = await request('/points/exchange', 'POST', { id: item.id });
-    const data = res.data.data;
+    let data;
+    try {
+      const res = await request('/points/exchange', 'POST', { id: item.id });
+      data = res.data;
+    } catch (err) {
+      wx.showToast({ title: (err && err.message) || '兑换失败', icon: 'none' });
+      return;
+    }
     wx.showToast({ title: '兑换成功', icon: 'success' });
-    const userInfo = wx.getStorageSync('userinfo') || {};
+    const userInfo = wx.getStorageSync('userInfo') || {};
     if (data.quota !== undefined) {
-      userInfo.people = data.quota;
+      userInfo.quota = data.quota;
     }
     if (data.isVip !== undefined) {
       userInfo.isVip = data.isVip;
-      userInfo.is_vip = data.isVip;
       userInfo.vipInfo = data.vipInfo || userInfo.vipInfo;
     }
-    wx.setStorageSync('userinfo', userInfo);
+    if (data.points !== undefined) {
+      userInfo.points = data.points;
+    }
+    wx.setStorageSync('userInfo', userInfo);
     this.setData({
-      currentPoints: data.currentPoints,
+      points: data.points,
       isVip: data.isVip !== undefined ? data.isVip : this.data.isVip,
       isVipText: data.isVip ? '您是VIP会员' : 'VIP会员可以无限制制作代码',
       pointRecords: data.records,
@@ -121,15 +139,103 @@ Page({
   },
 
   async handleEarnPoints(e) {
-    const option = e.currentTarget.dataset.option;
-    if (!option || !option.isActive) return;
+    const { option } = e.currentTarget.dataset;
+    if (!option || !option.isActive) {
+      wx.showToast({ title: (option && option.disabledReason) || '该任务暂不可用', icon: 'none' });
+      return;
+    }
 
-    const res = await request('/points/earn', 'POST', { type: option.type });
-    const data = res.data.data;
+    if (this.data.earningType) return;
+
+    try {
+      this.setData({ earningType: option.type });
+      if (option.type === 'watch_ad') {
+        const completed = await this.showRewardAd();
+        if (!completed) return;
+      }
+      await this.claimEarnPoints(option.type);
+    } catch (err) {
+      wx.showToast({ title: (err && err.message) || '领取失败', icon: 'none' });
+    } finally {
+      this.setData({ earningType: '' });
+    }
+  },
+
+  async claimEarnPoints(type) {
+    const res = await request('/points/earn', 'POST', {
+      type,
+      adCompleted: type === 'watch_ad' ? '1' : '',
+    });
+    const { data } = res;
     wx.showToast({ title: data.message, icon: 'none' });
+    const userInfo = wx.getStorageSync('userInfo') || {};
+    if (data.points !== undefined) {
+      userInfo.points = data.points;
+    }
+    wx.setStorageSync('userInfo', userInfo);
     this.setData({
-      currentPoints: data.currentPoints,
+      points: data.points,
       pointRecords: data.records,
+      earnOptions: data.earnOptions || this.data.earnOptions,
+    });
+  },
+
+  showRewardAd() {
+    const adUnitId = String(this.data.rewardAdUnitId || '').trim();
+    if (!adUnitId) {
+      wx.showToast({ title: '激励广告暂未配置', icon: 'none' });
+      return Promise.resolve(false);
+    }
+    if (typeof wx.createRewardedVideoAd !== 'function') {
+      wx.showToast({ title: '当前微信版本不支持激励广告', icon: 'none' });
+      return Promise.resolve(false);
+    }
+
+    let loadingVisible = false;
+    const showLoading = () => {
+      loadingVisible = true;
+      wx.showLoading({ title: '加载广告' });
+    };
+    const hideLoading = () => {
+      if (!loadingVisible) return;
+      loadingVisible = false;
+      wx.hideLoading();
+    };
+
+    showLoading();
+    return new Promise((resolve) => {
+      const ad = wx.createRewardedVideoAd({ adUnitId });
+      let settled = false;
+      const finish = (completed, message = '') => {
+        if (settled) return;
+        settled = true;
+        hideLoading();
+        if (message) {
+          wx.showToast({ title: message, icon: 'none' });
+        }
+        resolve(completed);
+      };
+      const onClose = (res) => {
+        if (res && res.isEnded) {
+          finish(true);
+          return;
+        }
+        finish(false, '请完整观看广告后领取积分');
+      };
+      const onError = () => {
+        finish(false, '广告暂不可用，请稍后重试');
+      };
+
+      ad.onClose(onClose);
+      ad.onError(onError);
+      ad.show()
+        .then(() => hideLoading())
+        .catch(() => {
+          ad.load()
+            .then(() => ad.show())
+            .then(() => hideLoading())
+            .catch(() => finish(false, '广告暂不可用，请稍后重试'));
+        });
     });
   },
 

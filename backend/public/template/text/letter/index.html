@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="icon" type="image/x-icon" href="icon.ico" />
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>❤️</title>
+    <style>
+        *{margin:0;padding:0}body{font:16px/1.8 Lato,"Microsoft Jhenghei","Hiragino Sans GB","Microsoft YaHei",arial,sans-serif;color:#333}::selection{background:#222;color:#fff}a{color:#333}p{margin:12px 0}ol,ul{list-style:none}.vi{position:relative;margin:100px auto 0;width:960px}@media(max-width:767px){.vi{margin-top:50px;width:auto}}.vi h1{text-align:center;position:relative;top:-10px;opacity:0}.quote{position:relative;margin:40px 0;color:#000;text-align:center;font-weight: bold;}.quote::after,.quote::before{position:absolute;content:' ';display:block;width:100%;height:24px;opacity:.2}.quote::before{top:-20px;border-top:1px solid #ccc;background:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDM0aDZsNC04di0xMmgtMTJ2MTJoNnptMTYgMGg2bDQtOHYtMTJoLTEydjEyaDZ6Ii8+PHBhdGggZD0iTTAgMGg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+PC9zdmc+) no-repeat 0 -7px;background-size:24px 24px}.quote::after{bottom:-20px;border-bottom:1px solid #ccc;background:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDQ4IDQ4IiB3aWR0aD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDM0aDZsNC04di0xMmgtMTJ2MTJoNnptMTYgMGg2bDQtOHYtMTJoLTEydjEyaDZ6Ii8+PHBhdGggZD0iTTAgMGg0OHY0OGgtNDh6IiBmaWxsPSJub25lIi8+PC9zdmc+) no-repeat 100% 7px;background-size:24px 24px}.quote cite::before{content:"-";padding:0 5px}.quote div,.quote p{text-align:center}.quote-text{line-height:20px}.menu{margin-top:40px;text-align:center;font-size:14px}.menu a{display:inline-block;position:relative;margin-left:10px;text-decoration:none;border-bottom:1px solid #ccc}.menu a:hover{border-bottom:1px solid #333}.menu a:active{top:1px!important}.menu a:first-child{margin-left:0}.sidebar{margin:0 auto;max-width:500px}@media(max-width:767px){.sidebar{padding:0 30px}}.location{margin-top:40px;text-align:center}.location-icon{position:relative;top:10px;opacity:0;display:inline-block;vertical-align:top;width:16px;height:40px;background-size:16px}.location-text{display:inline-block;vertical-align:top;font-size:13px;line-height:40px}.relocating{opacity:0;color:#ccc;font-size:13px;text-align:center;transition:all .3s ease}.content{display:none;position:relative;margin-left:400px}.close{position:absolute;top:-10px;right:10px}.animate-init{position:relative;top:-10px;opacity:0}.hidden{display:none}.div_is_open_btn{width:130px;height:70px;margin:200px auto;border-radius:3px;overflow:hidden;-moz-box-shadow:0 0 10px #999;-webkit-box-shadow:0 0 10px #999;box-shadow:0 0 10px #999;animation-name:heartbeat;animation-duration:2s;animation-timing-function:cubic-bezier(0,0,0,1.74);animation-delay:.5s;animation-iteration-count:infinite;animation-play-state:running}@keyframes heartbeat{0%{transform:scale(.95)}100%{transform:scale(.95)}50%{transform:scale(1)}}.quote img{width:100%;height:220px}@media (min-width:520px){.quote img{height:320px}}h1{font-size:1.8rem;}
+        html,body{ margin:0px; width:100%; height:100%; overflow:hidden; } body::before{ content:""; position: fixed; inset: 0; background: var(--overlay-bg, rgba(255,255,255,.75)); /* 默认 .75 */ }
+    </style>
+</head>
+
+<body>
+
+            
+<div class="vi" style="margin-top:20px;display:none;">
+    <div class="sidebar">
+        <div class="header">
+            <h1 id="ftitle">{$data.ftitle}</h1>
+            <div class="quote" id="vi">
+                <img id="cover" src="{$data.cover_url}"/>
+           </div>
+           </div>
+        <div class="location">
+            <i class="location-icon"></i>
+            <span id="location-text" class="location-text animate-init">© </span>
+        </div>
+        <div class="relocating">
+            Navigating to: <span class="relocate-location"></span>...
+        </div>
+    </div>
+
+    <div class="content">
+        <span class="close">close</span>
+    </div>
+</div>
+
+<script src="/template/common/js/jquery-2.1.1.min.js"></script>
+<script>
+    var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    
+    document.getElementById("ftitle").innerText = dataInfo.ftitle;
+    document.getElementById("cover").src = dataInfo.coverImg;
+    document.getElementById("location-text").innerText = "© " + dataInfo.title;
+    
+    //修改透明度+背景图片
+    var opacity = 1 - dataInfo.opacity / 100;
+    document.body.style.setProperty('--overlay-bg', 'rgba(255,255,255,'+ opacity +')');
+    dataInfo?.backgroundImg && (document.body.style.background = `url("${encodeURI(dataInfo.backgroundImg)}") center center / 100% 100% no-repeat`);
+    
+    var opacity = 1 - dataInfo.opacity / 100;
+    var music = false;
+    
+    var delay = 1;
+    var DELAY_STEP = 400 + (1-opacity / 100) * 800;
+
+    var animationOptions = { opacity: 1, top: 0};
+
+    function animateMain() {
+        var dfd = $.Deferred();
+        var els = $('.animate-init');
+        var size = els.size();
+
+        els.each(function (index, el) {
+            delay++;
+            $(el).delay(index * DELAY_STEP)
+                    .animate(animationOptions);
+            (size - 1 === index) && dfd.resolve();
+        });
+        return dfd.promise();
+    }
+
+    function animateLocationIcon() {
+        $('.location-icon').delay(delay * DELAY_STEP).animate({
+            opacity: 1,
+            top: 0
+        }).promise().done(animationQuote);
+    }
+
+    function animationQuote() {}
+    
+ 
+    dataInfo.content.split("\r\n").forEach(function(item){
+        $('.quote').append(' <p class="quote-text animate-init">'+ item +'</p>');
+    })
+    
+    function onOpenClcik(){
+        $(".vi").show();
+        $('h1').animate(animationOptions).promise()
+        .pipe(animateMain)
+        .pipe(animateLocationIcon);
+    }
+
+</script>
+</body>
+</html>

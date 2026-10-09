@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>️{$data.title|default="❤️"}️</title>
+<meta name="viewport" content="width=500, target-densitydpi=device-dpi, user-scalable=0">
+<style type="text/css">
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    
+    html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        background: rgb(0, 0, 0);
+        
+    }
+    canvas {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    #child{
+        position: fixed;
+        top:50%;
+        left: 50%;
+        margin-top: -75px;
+        margin-left:-100px ;
+
+    }
+
+    h4{font-family:"黑体";font-size: 40px;color:#f584b7;position: relative;top: -70px;left: -80px;}
+    
+    
+#div_container{width: 500px; margin: 0 auto; position: relative; font-size: 1em;}
+#contentToWrite{width: 50%; font-size: 1.8em; text-align: center; color: pink; z-index: 9999; overflow: auto;  overflow-x: hidden; padding-bottom: 50px; position: absolute; left: 49%; top: 46%; transform: translate(-48%, 0);display:none;}
+    
+    #div_container{width: 500px; height:100%;margin: 0 auto; position: relative; font-size: 1em;}
+
+    #canvas{width: 380%; height: 100%; top: 0%; left: -140%;}
+    
+    @media (max-width: 640px) {
+        #canvas{width: 180%; height: 180%; top: -42.5%; left: -40%;}
+    }
+   
+    #canvas-bg{z-index:9;}
+    
+    
+</style>
+</head>
+<body>
+    
+<div id="div_container">
+
+    <canvas id="canvas" style=""></canvas>
+    
+    <canvas id ="pinkboard" style="z-index:99;"></canvas>
+    
+    <canvas id="canvas-bg" width="500" height="1083"></canvas>
+    
+    <div id="contentToWrite">哈哈哈哈</div>
+        
+   
+    
+</div>
+
+<script src="/template/common/js/jquery-2.1.1.min.js"></script>
+<script>
+    var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    
+    //启用插件
+    dataInfo.plugin = {}
+    
+    //打印文字插件配置信息
+    dataInfo.plugin.printText = {
+        padding: '2rem 2rem 0rem 1.5rem',
+        text: dataInfo.content,
+        fontSize: '1.2rem',
+        lineHeight: '1.8rem',
+        color: dataInfo.color ? dataInfo.color : '#FFF',
+        autoPrint: false,
+    }
+    
+    //document.getElementById("text-source").innerText = dataInfo.content.replaceAll("\r\n","<br>");
+    document.getElementById("contentToWrite").innerText = dataInfo.ftitle;
+    
+    var background_url = "{$data.background_url}";
+    var background_opacity = "<?=1-$data['opacity'] / 100;?>";
+    
+    
+    
+var canvas = document.getElementById("canvas");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+if(background_url){
+    if(background_url.indexOf('heiping') > -1){
+        background_opacity = 0.0;
+    }
+    $("#canvas-bg").css('background',"url('"+ background_url +"') repeat-x");
+    $("#canvas-bg").css('opacity',background_opacity);
+    $("#canvas-bg").css('background-position','center center');
+    $("#canvas-bg").css('background-attachment','fixed');
+}
+
+	
+// Initialize the GL context
+var gl = canvas.getContext('webgl');
+if (!gl) {
+    console.error("Unable to initialize WebGL.");
+}
+//Time step
+var dt = 0.015;
+//Time
+var time = 0.0;
+//************** Shader sources **************
+var vertexSource = `
+attribute vec2 position;
+void main() {
+    gl_Position = vec4(position, 0.0, 1.0);
+}
+`;
+
+var fragmentSource = `
+precision highp float;
+
+uniform float width;
+uniform float height;
+vec2 resolution = vec2(width, height);
+
+uniform float time;
+
+#define POINT_COUNT 8
+
+vec2 points[POINT_COUNT];
+const float speed = -0.5;
+const float len = 0.25;
+float intensity = 0.9;
+float radius = 0.015;
+
+//https://www.shadertoy.com/view/MlKcDD
+//Signed distance to a quadratic bezier
+float sdBezier(vec2 pos, vec2 A, vec2 B, vec2 C){    
+    vec2 a = B - A;
+    vec2 b = A - 2.0*B + C;
+    vec2 c = a * 2.0;
+    vec2 d = A - pos;
+
+    float kk = 1.0 / dot(b,b);
+    float kx = kk * dot(a,b);
+    float ky = kk * (2.0*dot(a,a)+dot(d,b)) / 3.0;
+    float kz = kk * dot(d,a);      
+
+    float res = 0.0;
+
+    float p = ky - kx*kx;
+    float p3 = p*p*p;
+    float q = kx*(2.0*kx*kx - 3.0*ky) + kz;
+    float h = q*q + 4.0*p3;
+
+    if(h >= 0.0){ 
+        h = sqrt(h);
+        vec2 x = (vec2(h, -h) - q) / 2.0;
+        vec2 uv = sign(x)*pow(abs(x), vec2(1.0/3.0));
+        float t = uv.x + uv.y - kx;
+        t = clamp( t, 0.0, 1.0 );
+
+        // 1 root
+        vec2 qos = d + (c + b*t)*t;
+        res = length(qos);
+    }else{
+        float z = sqrt(-p);
+        float v = acos( q/(p*z*2.0) ) / 3.0;
+        float m = cos(v);
+        float n = sin(v)*1.732050808;
+        vec3 t = vec3(m + m, -n - m, n - m) * z - kx;
+        t = clamp( t, 0.0, 1.0 );
+
+        // 3 roots
+        vec2 qos = d + (c + b*t.x)*t.x;
+        float dis = dot(qos,qos);
+
+        res = dis;
+
+        qos = d + (c + b*t.y)*t.y;
+        dis = dot(qos,qos);
+        res = min(res,dis);
+
+        qos = d + (c + b*t.z)*t.z;
+        dis = dot(qos,qos);
+        res = min(res,dis);
+
+        res = sqrt( res );
+    }
+
+    return res;
+}
+
+
+//http://mathworld.wolfram.com/HeartCurve.html
+vec2 getHeartPosition(float t){
+    return vec2(16.0 * sin(t) * sin(t) * sin(t),
+                            -(13.0 * cos(t) - 5.0 * cos(2.0*t)
+                            - 2.0 * cos(3.0*t) - cos(4.0*t)));
+}
+
+//https://www.shadertoy.com/view/3s3GDn
+float getGlow(float dist, float radius, float intensity){
+    return pow(radius/dist, intensity);
+}
+
+float getSegment(float t, vec2 pos, float offset, float scale){
+    for(int i = 0; i < POINT_COUNT; i++){
+        points[i] = getHeartPosition(offset + float(i)*len + fract(speed * t) * 6.28);
+    }
+
+    vec2 c = (points[0] + points[1]) / 2.0;
+    vec2 c_prev;
+    float dist = 10000.0;
+
+    for(int i = 0; i < POINT_COUNT-1; i++){
+        //https://tinyurl.com/y2htbwkm
+        c_prev = c;
+        c = (points[i] + points[i+1]) / 2.0;
+        dist = min(dist, sdBezier(pos, scale * c_prev, scale * points[i], scale * c));
+    }
+    return max(0.0, dist);
+}
+
+void main(){
+    vec2 uv = gl_FragCoord.xy/resolution.xy;
+    float widthHeightRatio = resolution.x/resolution.y;
+    vec2 centre = vec2(0.5, 0.5);
+    vec2 pos = centre - uv;
+    pos.y /= widthHeightRatio;
+    //Shift upwards to centre heart
+    pos.y += 0.02;
+    float scale = 0.000015 * height;
+
+    float t = time;
+
+    //Get first segment
+    float dist = getSegment(t, pos, 0.0, scale);
+    float glow = getGlow(dist, radius, intensity);
+
+    vec3 col = vec3(0.0);
+
+    //White core
+    col += 10.0*vec3(smoothstep(0.003, 0.001, dist));
+    //Pink glow
+    col += glow * vec3(0.94,0.14,0.4);
+
+    //Get second segment
+    dist = getSegment(t, pos, 3.4, scale);
+    glow = getGlow(dist, radius, intensity);
+
+    //White core
+    col += 10.0*vec3(smoothstep(0.003, 0.001, dist));
+    //Blue glow
+    col += glow * vec3(0.2,0.6,1.0);
+
+    //Tone mapping
+    col = 1.0 - exp(-col);
+
+    //Output to screen
+    gl_FragColor = vec4(col,1.0);
+}
+`;
+
+//************** Utility functions **************
+
+window.addEventListener('resize', onWindowResize, false);
+
+function onWindowResize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform1f(widthHandle, window.innerWidth);
+    gl.uniform1f(heightHandle, window.innerHeight);
+}
+
+
+//Compile shader and combine with source
+function compileShader(shaderSource, shaderType) {
+    var shader = gl.createShader(shaderType);
+    gl.shaderSource(shader, shaderSource);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        throw "Shader compile failed with: " + gl.getShaderInfoLog(shader);
+    }
+    return shader;
+}
+
+function getAttribLocation(program, name) {
+    var attributeLocation = gl.getAttribLocation(program, name);
+    if (attributeLocation === -1) {
+        throw 'Cannot find attribute ' + name + '.';
+    }
+    return attributeLocation;
+}
+
+function getUniformLocation(program, name) {
+    var attributeLocation = gl.getUniformLocation(program, name);
+    if (attributeLocation === -1) {
+        throw 'Cannot find uniform ' + name + '.';
+    }
+    return attributeLocation;
+}
+
+//************** Create shaders **************
+
+//Create vertex and fragment shaders
+var vertexShader = compileShader(vertexSource, gl.VERTEX_SHADER);
+var fragmentShader = compileShader(fragmentSource, gl.FRAGMENT_SHADER);
+
+//Create shader programs
+var program = gl.createProgram();
+gl.attachShader(program, vertexShader);
+gl.attachShader(program, fragmentShader);
+gl.linkProgram(program);
+
+gl.useProgram(program);
+
+//Set up rectangle covering entire canvas 
+var vertexData = new Float32Array([-1.0, 1.0, // top left
+    -1.0, -1.0, // bottom left
+    1.0, 1.0, // top right
+    1.0, -1.0, // bottom right
+]);
+
+//Create vertex buffer
+var vertexDataBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexDataBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+
+// Layout of our data in the vertex buffer
+var positionHandle = getAttribLocation(program, 'position');
+
+gl.enableVertexAttribArray(positionHandle);
+gl.vertexAttribPointer(positionHandle,
+    2, // position is a vec2 (2 values per component)
+    gl.FLOAT, // each component is a float
+    false, // don't normalize values
+    2 * 4, // two 4 byte float components per vertex (32 bit float is 4 bytes)
+    0 // how many bytes inside the buffer to start from
+);
+
+var timeHandle = getUniformLocation(program, 'time');
+var widthHandle = getUniformLocation(program, 'width');
+var heightHandle = getUniformLocation(program, 'height');
+
+gl.uniform1f(widthHandle, window.innerWidth);
+gl.uniform1f(heightHandle, window.innerHeight);
+
+function draw() {
+    time += dt;
+
+    gl.uniform1f(timeHandle, time);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    requestAnimationFrame(draw);
+}
+
+var settings = {
+    particles: {
+        length:   500,
+        duration:   2,
+        velocity: 40,
+        effect: -0.55,
+        size:      20,
+    },
+};
+
+(function(){var b=0;var c=["ms","moz","webkit","o"];for(var a=0;a<c.length&&!window.requestAnimationFrame;++a){window.requestAnimationFrame=window[c[a]+"RequestAnimationFrame"];window.cancelAnimationFrame=window[c[a]+"CancelAnimationFrame"]||window[c[a]+"CancelRequestAnimationFrame"]}if(!window.requestAnimationFrame){window.requestAnimationFrame=function(h,e){var d=new Date().getTime();var f=Math.max(0,16-(d-b));var g=window.setTimeout(function(){h(d+f)},f);b=d+f;return g}}if(!window.cancelAnimationFrame){window.cancelAnimationFrame=function(d){clearTimeout(d)}}}());
+
+var Point = (function() {
+    function Point(x, y) {
+        this.x = (typeof x !== 'undefined') ? x : 0;
+        this.y = (typeof y !== 'undefined') ? y : 0;
+    }
+    Point.prototype.clone = function() {
+        return new Point(this.x, this.y);
+    };
+    Point.prototype.length = function(length) {
+        if (typeof length == 'undefined')
+            return Math.sqrt(this.x * this.x + this.y * this.y);
+        this.normalize();
+        this.x *= length;
+        this.y *= length;
+        return this;
+    };
+    Point.prototype.normalize = function() {
+        var length = this.length();
+        this.x /= length;
+        this.y /= length;
+        return this;
+    };
+    return Point;
+})();
+
+var Particle = (function() {
+    function Particle() {
+        this.position = new Point();
+        this.velocity = new Point();
+        this.acceleration = new Point();
+        this.age = 0;
+    }
+    Particle.prototype.initialize = function(x, y, dx, dy) {
+        this.position.x = x;
+        this.position.y = y;
+        this.velocity.x = dx;
+        this.velocity.y = dy;
+        this.acceleration.x = dx * settings.particles.effect;
+        this.acceleration.y = dy * settings.particles.effect;
+        this.age = 0;
+    };
+    Particle.prototype.update = function(deltaTime) {
+        this.position.x += this.velocity.x * deltaTime;
+        this.position.y += this.velocity.y * deltaTime;
+        this.velocity.x += this.acceleration.x * deltaTime;
+        this.velocity.y += this.acceleration.y * deltaTime;
+        this.age += deltaTime;
+    };
+    Particle.prototype.draw = function(context, image) {
+        function ease(t) {
+            return (--t) * t * t + 1;
+        }
+        var size = image.width * ease(this.age / settings.particles.duration);
+        context.globalAlpha = 1 - this.age / settings.particles.duration;
+        context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size);
+    };
+    return Particle;
+})();
+
+var ParticlePool = (function() {
+    var particles,
+        firstActive = 0,
+        firstFree   = 0,
+        duration    = settings.particles.duration;
+
+    function ParticlePool(length) {
+        particles = new Array(length);
+        for (var i = 0; i < particles.length; i++)
+            particles[i] = new Particle();
+    }
+    ParticlePool.prototype.add = function(x, y, dx, dy) {
+        particles[firstFree].initialize(x, y, dx, dy);
+
+        firstFree++;
+        if (firstFree   == particles.length) firstFree   = 0;
+        if (firstActive == firstFree       ) firstActive++;
+        if (firstActive == particles.length) firstActive = 0;
+    };
+    ParticlePool.prototype.update = function(deltaTime) {
+        var i;
+
+        if (firstActive < firstFree) {
+            for (i = firstActive; i < firstFree; i++)
+                particles[i].update(deltaTime);
+        }
+        if (firstFree < firstActive) {
+            for (i = firstActive; i < particles.length; i++)
+                particles[i].update(deltaTime);
+            for (i = 0; i < firstFree; i++)
+                particles[i].update(deltaTime);
+        }
+
+        while (particles[firstActive].age >= duration && firstActive != firstFree) {
+            firstActive++;
+            if (firstActive == particles.length) firstActive = 0;
+        }
+
+
+    };
+    ParticlePool.prototype.draw = function(context, image) {
+        if (firstActive < firstFree) {
+            for (i = firstActive; i < firstFree; i++)
+                particles[i].draw(context, image);
+        }
+        if (firstFree < firstActive) {
+            for (i = firstActive; i < particles.length; i++)
+                particles[i].draw(context, image);
+            for (i = 0; i < firstFree; i++)
+                particles[i].draw(context, image);
+        }
+    };
+    return ParticlePool;
+})();
+
+(function(canvas) {
+    var context = canvas.getContext('2d'),
+        particles = new ParticlePool(settings.particles.length),
+        particleRate = settings.particles.length / settings.particles.duration,
+        time;
+
+    function pointOnHeart(t) {
+        return new Point(
+            130 * Math.pow(Math.sin(t), 3),
+            90 * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t) + 25
+        );
+    }
+
+    var image = (function() {
+        var canvas  = document.createElement('canvas'),
+            context = canvas.getContext('2d');
+        canvas.width  = settings.particles.size;
+        canvas.height = settings.particles.size;
+        function to(t) {
+            var point = pointOnHeart(t);
+            point.x = settings.particles.size / 2 + point.x * settings.particles.size / 350;
+            point.y = settings.particles.size / 2 - point.y * settings.particles.size / 350;
+            return point;
+        }
+        context.beginPath();
+        var t = -Math.PI;
+        var point = to(t);
+        context.moveTo(point.x, point.y);
+        while (t < Math.PI) {
+            t += 0.01;
+            point = to(t);
+            context.lineTo(point.x, point.y);
+        }
+        context.closePath();
+        context.fillStyle = '#ea80b0';
+        context.fill();
+        var image = new Image();
+        image.src = canvas.toDataURL();
+        return image;
+    })();
+
+    function render() {
+        requestAnimationFrame(render);
+        var newTime   = new Date().getTime() / 1000,
+            deltaTime = newTime - (time || newTime);
+        time = newTime;
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        var amount = particleRate * deltaTime;
+        for (var i = 0; i < amount; i++) {
+            var pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
+            var dir = pos.clone().length(settings.particles.velocity);
+            particles.add(canvas.width / 2 + pos.x, canvas.height / 2 - pos.y, dir.x, -dir.y);
+        }
+
+        particles.update(deltaTime);
+        particles.draw(context, image);
+    }
+
+    function onResize() {
+        canvas.width  = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+    }
+    window.onresize = onResize;
+    
+    //爱心代码跳动
+    setTimeout(function() {
+        onResize();
+        render();
+    }, 10);
+})(document.getElementById('pinkboard'));
+
+</script>
+<script src="/template/common/js/printText.js?v303501292"></script>
+<script>
+    //打开事件
+    function onOpenClcik(){
+        $(".type_words").show();
+        draw();
+        
+        $("#contentToWrite").show();
+        printText();
+    }
+</script>
+</body>
+</html>

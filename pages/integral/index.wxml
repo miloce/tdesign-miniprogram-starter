@@ -9,7 +9,7 @@
         </view>
         <view class="points-info">
           <text class="points-label">当前积分：</text>
-          <text class="points-value">{{currentPoints}}</text>
+          <text class="points-value">{{points}}</text>
         </view>
         <view class="points-tip">
           积分兑换功能
@@ -41,22 +41,30 @@
           <block wx:for="{{earnOptions}}" wx:key="id">
             <view
               bindtap="handleEarnPoints"
-              class="earn-item {{!item.isActive ? 'disabled' : ''}}"
+              class="earn-item {{(!item.isActive || earningType) ? 'disabled' : ''}}"
               data-option="{{item}}"
               wx:if="{{item.type !== 'invite_friend'}}"
             >
               <text class="earn-name">{{item.name}}</text>
-              <text class="earn-reward">+{{item.points}}</text>
+              <text class="earn-reward">{{earningType === item.type ? '处理中' : item.rewardText}}</text>
             </view>
             <button
-              class="earn-item invite-button native-button"
+              class="earn-item invite-button native-button {{(!item.isActive || earningType) ? 'disabled' : ''}}"
               data-option="{{item}}"
+              disabled="{{!item.isActive || earningType}}"
               open-type="share"
               wx:if="{{item.type === 'invite_friend' && item.isActive}}"
             >
               <text class="earn-name">{{item.name}}</text>
-              <text class="earn-reward">+{{item.points}}</text>
+              <text class="earn-reward">{{item.rewardText}}</text>
             </button>
+            <view
+              class="earn-item disabled"
+              wx:if="{{item.type === 'invite_friend' && !item.isActive}}"
+            >
+              <text class="earn-name">{{item.name}}</text>
+              <text class="earn-reward">{{item.rewardText}}</text>
+            </view>
           </block>
         </view>
         <view class="vip-entry" wx:if="{{!isVip && paymentEnabled}}">

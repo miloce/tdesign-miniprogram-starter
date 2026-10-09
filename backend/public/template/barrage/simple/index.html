@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- 只保留CDN加载jQuery的方式 -->
+    <script src="/template/common/js/jquery-2.1.1.min.js"></script>
+    <title>{$data.title}</title>
+   
+     <style>
+        /* 隐藏页面滚动条 */
+        body {
+            overflow: hidden;
+        }
+
+        /* 背景图容器样式 */
+        #popup-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://pic1.zhimg.com/80/v2-2b60536280031f2f83f05f9bc39023aa_720w.webp');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+             opacity: 1; /* 初始设置为完全不透明 */
+            transition: opacity 0.5s ease; /* 添加过渡效果，透明度在0.5秒内以缓动方式变化 */
+        }
+
+        /* 弹窗整体样式 */
+       #message-popup {
+    z-index: 99;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    width: 80%;
+    /*max-width: 300px;*/
+    opacity: 0; /* 初始设置为完全透明 */
+    transition: opacity 0.5s ease; /* 添加过渡效果，透明度在0.5秒内以缓动方式变化 */
+}
+
+        /* 弹窗内消息标题样式 */
+        #message-popup h3 {
+            margin-top: 0;
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* 弹窗内消息内容样式 */
+        #message-popup p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal; 
+}
+
+        /* 包含图片和标题的div样式 */
+      .message-header {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 图片样式 */
+      .message-header img {
+            width: 30px; /* 根据需要调整图片大小 */
+            height: 30px;
+            margin-right: 10px; /* 调整图片与文字间的间距 */
+        }
+
+        /* 让 "新微信消息" h3与图片垂直居中对齐 */
+      .message-header h3:first-child {
+            margin: 0;
+        }
+
+        /* "现在" h3的样式，将其定位在最右边且与左边的h3垂直居中 */
+      .message-header h3:last-child {
+            /*margin: 0;*/
+            margin-left: auto;
+        }
+    </style>
+   
+    <style>
+    
+    
+    
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-size: 1.2rem;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        #outer {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 98;
+            white-space: nowrap;
+        }
+
+        #wenzi {
+            display: none;
+        }
+
+        /* 修改后的按钮样式 */
+      .but {
+        position: absolute;
+    bottom: 4%;
+    right: 1vw;
+    width: 30px;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    text-align: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+    border: 1px solid #ffffff;
+        }
+
+      .but.more {
+            bottom: 12%;
+        }
+
+      .snowbg {
+            width: auto;
+            height: 600px;
+            clear: both;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        :root {
+            --text-shadow-color-1: rgba(173, 216, 230, 0.8);
+            --text-shadow-color-2: rgba(255, 0, 0, 0.8);
+            --text-shadow-color-3: rgba(0, 255, 0, 0.8);
+        }
+
+      .snow {
+            position: absolute;
+            bottom: 0px;
+            font-family: "CustomFont";
+            overflow: hidden;
+            color: #FFFFFF;
+           filter: drop-shadow(0 0 10px rgba(255, 255, 255, 48));
+ font-size: 16px;
+ 
+ 
+        }
+
+     
+
+        @font-face {
+            font-family: "CustomFont";
+            /*src: url("chuangketiejingangti.otf") format("truetype");*/
+            src: url("chuangketiejingangti.otf") format("truetype");
+            src: url("chuangketiejingangti.woff") format("woff");
+            src: url("chuangketiejingangti.woff2") format("woff2");
+        }
+
+        /* 针对移动端的媒体查询及样式调整 */
+        @media all and (max-width: 1000px) {
+          .snowbg {
+                width: 100%;
+                height: 100%;
+                clear: both;
+                margin: 0 auto;
+                position: relative;
+                overflow: hidden;
+            }
+
+          
+        }
+
+        /* 修改后的背景图容器样式 */
+        div[style*="background-image"] {
+            background-repeat: repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        html,body{ margin:0px; width:100%; height:100%; overflow:hidden; background:#000; } body::before{ content:""; position: fixed; inset: 0; background: var(--overlay-bg, rgba(0,0,0,.75)); /* 默认 .75 */ }
+     
+    </style>
+</head>
+
+<body onclick="mp3.play();">
+
+
+
+        <div style="width: 100%;
+    height: 100%;
+    display: block;
+   /*background-color: rgba(0, 0, 0, 0.8);*/
+    position: fixed;
+    z-index: 97;">
+            <div class="snowbg">
+            </div>
+        </div>
+
+
+
+
+
+<div id="content" style="display:none;">{:str_replace(PHP_EOL,"<br>",strip_tags($data.content))}</div>
+
+<script>
+    var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    
+    //你有一条新的消息请注意查收！
+    var arr = dataInfo.content.split("\r\n").slice(0, 16).map(text => text.slice(0, 15));
+    
+    //修改透明度+背景图片
+    var opacity = 1 - dataInfo.opacity / 100;
+    document.body.style.setProperty('--overlay-bg', 'rgba(0,0,0,'+ opacity +')');
+    dataInfo?.backgroundImg && (document.body.style.background = `url("${encodeURI(dataInfo.backgroundImg)}") center center / 100% 100% no-repeat`);
+    
+    
+    function onOpenClcik(){
+        var snowElementArray = []; 
+        for (var loopIndex = 0; loopIndex < 50; loopIndex++) {
+            var snowDiv = $("<div class='snow'>").text("").css({
+            "position": "absolute",
+            "opacity": 0,
+            "font-size": "0px",
+            "white-space": "nowrap"
+            });
+            $(".snowbg").append(snowDiv);
+            snowElementArray.push(snowDiv);
+        }
+        
+        setInterval(function () {
+    var windowWidthValue = $(window).width();
+    var randomXPosition = Math.random() * (windowWidthValue + 200) - 100;
+    var randomOpacityValue = 0.6 + Math.random() * 1;
+    var randomFontSizeIndex = Math.floor(Math.random() * arr.length); 
+    var randomFontSize = 10 + Math.random() * 12; 
+    var randomLeftOffset = randomXPosition - 100 + 200 * Math.random(); 
+    var randomAnimationDuration = 3000 + 2000 * Math.random(); 
+    var snowElement = snowElementArray.shift(); 
+    if (snowElement){
+        snowElement.text(arr[randomFontSizeIndex]);
+        snowElement.css({
+          "left": randomXPosition + "px",
+          "top": Math.random() * $(window).height() + "px",
+          "opacity": randomOpacityValue,
+          "font-size": randomFontSize + "px"
+        });
+        if (!snowElement.is(":visible")) {
+      snowElement.show();
+    }
+    snowElement.animate({
+      "top": "-=" + Math.random() * $(window).height() + "px",
+      "left": randomLeftOffset + "px",
+      "opacity": 0
+    }, randomAnimationDuration, "linear", function () {
+      snowElementArray.push($(this));
+      $(this).hide();
+    });
+    }
+    
+    
+  }, 50);
+    }
+
+
+</script>
+</body>
+</html>

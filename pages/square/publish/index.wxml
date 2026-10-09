@@ -1,0 +1,65 @@
+<nav title-text="发布动态" />
+
+<view class="publish-page">
+  <scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+    <view class="section">
+      <view class="section-title">选择模块</view>
+      <scroll-view class="module-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="module-tabs">
+          <view
+            wx:for="{{tabs}}"
+            wx:key="value"
+            class="module-tab {{item.selected ? 'active' : ''}}"
+            data-index="{{index}}"
+            bindtap="selectTab"
+          >
+            {{item.label}}
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="content-section">
+      <textarea
+        class="content-input"
+        value="{{content}}"
+        maxlength="{{maxLength}}"
+        placeholder="分享你的反馈、建议或想讨论的问题"
+        bindinput="onInput"
+      />
+      <view class="char-count">{{content.length}}/{{maxLength}}</view>
+    </view>
+
+    <view class="image-section">
+      <view class="section-label">添加图片</view>
+      <view class="image-grid">
+        <view wx:for="{{imageList}}" wx:key="*this" class="image-item">
+          <image class="uploaded-image" src="{{item}}" mode="aspectFill" />
+          <view class="delete-btn" data-index="{{index}}" bindtap="deleteImage">×</view>
+        </view>
+        <view wx:if="{{imageList.length < maxImages}}" class="add-image-btn" bindtap="chooseImage">
+          <view class="add-icon">+</view>
+          <view class="add-text">图片</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="settings-section">
+      <view class="setting-item" bindtap="togglePublishMode">
+        <view class="setting-label">发布方式</view>
+        <view class="setting-value">
+          <text class="setting-desc">{{publishMode}}</text>
+          <t-icon name="chevron-right" size="32rpx" />
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="publish-section">
+    <button class="publish-btn" loading="{{publishing}}" disabled="{{publishing}}" bindtap="publish">
+      发布
+    </button>
+  </view>
+</view>
+
+<login-sheet show="{{showLogin}}" bind:close="onCloseLogin" bind:success="onLoginSuccess" />

@@ -4,18 +4,12 @@
         "openid": "dev_openid_local",
         "nickname": "测试用户",
         "avatar": "",
-        "phone": "",
-        "email": "",
         "role": "user",
         "status": "active",
         "points": 1888,
         "quota": 88,
         "isVip": true,
         "vipExpireAt": "forever",
-        "remark": "",
-        "createdAt": "2026-05-20T06:21:18+00:00",
-        "lastLoginAt": "2026-05-20T06:21:18+00:00",
-        "loginCount": 1,
         "records": [
             {
                 "id": "P20260520001",
@@ -38,25 +32,25 @@
                 "changeValue": 200,
                 "changeText": "-"
             }
-        ]
+        ],
+        "createdAt": "2026-05-20T06:21:18+00:00",
+        "lastLoginAt": "2026-05-20T06:21:18+00:00",
+        "phone": "",
+        "email": "",
+        "remark": "",
+        "loginCount": 1
     },
     {
         "id": 390235,
         "openid": "dev_openid_098f6bcd4621",
         "nickname": "云栈点用户",
         "avatar": "",
-        "phone": "",
-        "email": "",
         "role": "user",
         "status": "active",
         "points": 1280,
         "quota": 3,
         "isVip": false,
         "vipExpireAt": "",
-        "remark": "",
-        "createdAt": "2026-05-20T06:00:50+00:00",
-        "lastLoginAt": "2026-05-20T06:00:50+00:00",
-        "loginCount": 1,
         "records": [
             {
                 "id": "P20260520001",
@@ -79,25 +73,25 @@
                 "changeValue": 200,
                 "changeText": "-"
             }
-        ]
+        ],
+        "createdAt": "2026-05-20T06:00:50+00:00",
+        "lastLoginAt": "2026-05-20T06:00:50+00:00",
+        "phone": "",
+        "email": "",
+        "remark": "接口测试",
+        "loginCount": 1
     },
     {
         "id": 233111,
         "openid": "oL8I43flaski-3Q2shkh4olGQEn4",
-        "nickname": "管理员",
-        "avatar": "",
-        "phone": "",
-        "email": "",
+        "nickname": "Joy😏",
+        "avatar": "/uploads/avatars/0b0c58992804b7a81ab434f7c54ce74b.jpeg",
         "role": "admin",
         "status": "active",
         "points": 1330,
         "quota": 3,
         "isVip": false,
         "vipExpireAt": "",
-        "remark": "",
-        "createdAt": "2026-05-20T06:00:50+00:00",
-        "lastLoginAt": "2026-05-20T06:00:50+00:00",
-        "loginCount": 0,
         "records": [
             {
                 "id": "P20260519174144",
@@ -141,9 +135,16 @@
                 "changeValue": 200,
                 "changeText": "-"
             }
-        ]
+        ],
+        "createdAt": "2026-05-20T06:00:50+00:00",
+        "lastLoginAt": "2026-05-20T06:00:50+00:00",
+        "phone": "",
+        "email": "",
+        "remark": "",
+        "loginCount": 0
     },
     {
+        "id": 340866,
         "openid": "wx_006f933d9ab71dccb7097277",
         "nickname": "云栈点用户",
         "avatar": "/static/avatar1.png",
@@ -158,6 +159,7 @@
         "lastLoginAt": "2026-05-20T22:46:33+08:00"
     },
     {
+        "id": 338424,
         "openid": "wx_a94a8fe5ccb19ba61c4c0873",
         "nickname": "云栈点用户",
         "avatar": "/static/avatar1.png",
@@ -172,6 +174,7 @@
         "lastLoginAt": "2026-05-20T22:46:34+08:00"
     },
     {
+        "id": 113441,
         "openid": "wx_f007aa7cb2a1aba05d6cefa9",
         "nickname": "云栈点用户",
         "avatar": "/static/avatar1.png",
@@ -186,6 +189,7 @@
         "lastLoginAt": "2026-05-20T22:48:19+08:00"
     },
     {
+        "id": 647893,
         "openid": "wx_5d9cac91cfb473f3507f3341",
         "nickname": "云栈点用户",
         "avatar": "/static/avatar1.png",
@@ -198,5 +202,50 @@
         "records": [],
         "createdAt": "2026-05-20T22:48:26+08:00",
         "lastLoginAt": "2026-05-20T22:48:26+08:00"
+    },
+    {
+        "id": 219403,
+        "openid": "wx_de62e344a2ec02b15de32395",
+        "nickname": "云栈点用户",
+        "avatar": "/static/avatar1.png",
+        "role": "user",
+        "status": "active",
+        "points": 1280,
+        "quota": 3,
+        "isVip": false,
+        "vipExpireAt": "",
+        "records": [],
+        "createdAt": "2026-05-21T00:34:47+08:00",
+        "lastLoginAt": "2026-05-21T00:34:47+08:00"
+    },
+    {
+        "id": 948116,
+        "openid": "wx_f02d4030298664072c62f7d1",
+        "nickname": "Joy😏",
+        "avatar": "http://tmp/2vsYZxnldeMfab7c52f709d5c9a78940823c1a63ee54.jpeg",
+        "role": "user",
+        "status": "active",
+        "points": 1280,
+        "quota": 3,
+        "isVip": false,
+        "vipExpireAt": "",
+        "records": [],
+        "createdAt": "2026-05-21T01:10:55+08:00",
+        "lastLoginAt": "2026-05-21T01:10:55+08:00"
+    },
+    {
+        "id": 541561,
+        "openid": "wx_74543a466033c76200d4f289",
+        "nickname": "Joy😏",
+        "avatar": "http://tmp/HfN2JC72-omg7a7a7ba8d211097188cf9682dc08b884.jpeg",
+        "role": "user",
+        "status": "active",
+        "points": 1280,
+        "quota": 3,
+        "isVip": false,
+        "vipExpireAt": "",
+        "records": [],
+        "createdAt": "2026-05-21T01:12:12+08:00",
+        "lastLoginAt": "2026-05-21T01:12:12+08:00"
     }
 ]

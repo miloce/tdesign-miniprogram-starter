@@ -1,6 +1,6 @@
 import request from '~/api/request';
 
-function wxLogin() {
+export function requestLoginCode() {
   return new Promise((resolve, reject) => {
     wx.login({
       success(res) {
@@ -15,8 +15,17 @@ function wxLogin() {
   });
 }
 
+function getClientId() {
+  let clientId = wx.getStorageSync('clientId');
+  if (!clientId) {
+    clientId = `c_${Date.now()}_${Math.random().toString(16).slice(2)}_${Math.random().toString(16).slice(2)}`;
+    wx.setStorageSync('clientId', clientId);
+  }
+  return clientId;
+}
+
 export function getStoredUser() {
-  return wx.getStorageSync('userinfo') || null;
+  return wx.getStorageSync('userInfo') || null;
 }
 
 export function isLoggedIn() {
@@ -24,40 +33,60 @@ export function isLoggedIn() {
 }
 
 export async function loginWithWechat() {
-  const code = await wxLogin();
+  const code = await requestLoginCode();
   const res = await request('/wechat/login', 'GET', {
     code,
+    clientId: getClientId(),
     _t: Date.now(),
   });
 
-  if (res.code !== 1 || !res.data || !res.data.userinfo) {
-    throw new Error(res.msg || '微信登录失败');
+  if (res.code !== 200 || !res.data || !res.data.userInfo) {
+    throw new Error(res.message || '微信登录失败');
   }
 
-  const { userinfo, config, ad } = res.data;
-  const token = userinfo.openid || `user_${userinfo.id}`;
+  const { userInfo, config, ad, token, accessToken } = res.data;
 
-  wx.setStorageSync('access_token', token);
-  wx.setStorageSync('userinfo', userinfo);
+  wx.setStorageSync('access_token', accessToken || token);
+  wx.setStorageSync('userInfo', userInfo);
   wx.setStorageSync('config', config || {});
   wx.setStorageSync('ad', ad || {});
 
   const app = getApp();
   if (app && app.globalData) {
-    app.globalData.userInfo = userinfo;
+    app.globalData.userInfo = userInfo;
     app.globalData.config = config || {};
     app.globalData.ad = ad || {};
   }
+  if (app && typeof app.syncBackgroundFetchToken === 'function') {
+    app.syncBackgroundFetchToken();
+  }
 
-  return userinfo;
+  return userInfo;
+}
+
+export async function saveUserProfile(profile) {
+  const res = await request('/user/profile', 'POST', profile);
+  if (res.code !== 200 || !res.data || !res.data.userInfo) {
+    throw new Error(res.message || '资料保存失败');
+  }
+
+  const { userInfo } = res.data;
+  wx.setStorageSync('userInfo', userInfo);
+
+  const app = getApp();
+  if (app && app.globalData) {
+    app.globalData.userInfo = userInfo;
+  }
+
+  return userInfo;
 }
 
 export function reportLoginTime() {
-  const userinfo = getStoredUser();
-  if (!userinfo || !userinfo.openid) return Promise.resolve();
+  const userInfo = getStoredUser();
+  if (!userInfo || !userInfo.openid) return Promise.resolve();
 
   return request('/wechat/logintime', 'POST', {
-    openid: userinfo.openid,
+    openid: userInfo.openid,
     _t: Date.now(),
   }).catch(() => null);
 }

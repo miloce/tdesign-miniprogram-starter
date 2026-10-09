@@ -1,50 +1,345 @@
 <view wx:if="{{template}}" class="make">
-  <view class="template-head">
-    <image src="{{template.cover}}" mode="aspectFill" />
-    <view>
-      <view class="template-head__title">{{template.title}}</view>
-      <view class="template-head__desc">{{template.subtitle}}</view>
+  <view class="template-summary">
+    <image class="template-summary__cover" src="{{template.cover}}" mode="aspectFill" />
+    <view class="template-summary__body">
+      <view class="template-summary__label">当前模板</view>
+      <view class="template-summary__title">{{template.title}}</view>
+      <view class="template-summary__meta">
+        <text>{{fields.length}} 项可编辑</text>
+        <text>预览后确认效果</text>
+      </view>
     </view>
   </view>
 
-  <view class="form-panel">
-    <view class="form-panel__title">定制内容</view>
-    <view wx:for="{{fields}}" wx:key="key" class="form-item">
-      <view class="form-item__label">
-        <text>{{item.label}}</text>
-        <text wx:if="{{item.required}}" class="required">*</text>
+  <block wx:if="{{hasContentFields}}">
+    <block wx:for="{{fields}}" wx:key="key" wx:for-index="fieldIndex">
+      <view wx:if="{{item.type === 'textarea'}}" class="content-card">
+        <view class="section-head">
+          <view>
+            <view class="section-title">
+              <text>{{item.label || '文案内容'}}</text>
+              <text wx:if="{{item.required}}" class="required">*</text>
+              <text
+                class="tip-icon"
+                data-tip="{{item.tip}}"
+                data-label="{{item.label}}"
+                data-type="{{item.type}}"
+                bindtap="onShowFieldTip"
+              >?</text>
+            </view>
+            <view class="section-desc">支持多行内容，换行会保留到生成页面。</view>
+          </view>
+        </view>
+        <view wx:if="{{item.tip}}" class="field-tip">{{item.tip}}</view>
+        <textarea
+          class="content-editor"
+          value="{{item.value}}"
+          placeholder="{{item.placeholder || '在此处输入文案内容'}}"
+          maxlength="{{item.maxlength}}"
+          show-confirm-bar="{{false}}"
+          adjust-position="{{true}}"
+          data-key="{{item.key}}"
+          data-index="{{fieldIndex}}"
+          bindinput="onFormInput"
+        />
+        <view class="editor-bar">
+          <text class="editor-count">{{item.count || 0}} / {{item.maxlength}}</text>
+          <view class="editor-actions">
+            <button
+              wx:if="{{item.canUseTextLibrary}}"
+              class="text-button"
+              data-key="{{item.key}}"
+              data-index="{{fieldIndex}}"
+              bindtap="openTextLibrary"
+            >文案库</button>
+            <button class="text-button" data-key="{{item.key}}" data-index="{{fieldIndex}}" bindtap="onClearField">清空</button>
+            <button class="text-button text-button--primary" data-key="{{item.key}}" data-index="{{fieldIndex}}" bindtap="onInlineRandomText">换一换</button>
+          </view>
+        </view>
+        <view wx:if="{{item.msg}}" class="field-msg">{{item.msg}}</view>
       </view>
-      <textarea
-        wx:if="{{item.type === 'textarea'}}"
-        value="{{item.value}}"
-        placeholder="{{item.placeholder}}"
-        maxlength="500"
-        auto-height
-        data-key="{{item.key}}"
-        data-index="{{index}}"
-        bindinput="onFormInput"
-      />
-      <input
-        wx:else
-        type="{{item.type === 'number' ? 'number' : 'text'}}"
-        value="{{item.value}}"
-        placeholder="{{item.placeholder}}"
-        data-key="{{item.key}}"
-        data-index="{{index}}"
-        bindinput="onFormInput"
-      />
+    </block>
+  </block>
+
+  <view wx:if="{{hasSettingFields}}" class="settings-card">
+    <view class="section-head">
+      <view>
+        <view class="section-title">页面设置</view>
+        <view class="section-desc">图片、音乐和展示参数会一起用于预览。</view>
+      </view>
     </view>
+    <block wx:for="{{fields}}" wx:key="key" wx:for-index="fieldIndex">
+      <view wx:if="{{item.type !== 'textarea'}}" class="setting-row setting-row--{{item.type}}">
+        <view class="setting-label">
+          <view>
+            <text>{{item.label}}</text>
+            <text wx:if="{{item.required}}" class="required">*</text>
+          </view>
+          <text
+            wx:if="{{item.tip || item.type === 'slider' || item.type === 'image' || item.type === 'music' || item.type === 'color'}}"
+            class="tip-icon"
+            data-tip="{{item.tip}}"
+            data-label="{{item.label}}"
+            data-type="{{item.type}}"
+            bindtap="onShowFieldTip"
+          >?</text>
+        </view>
+
+        <view class="setting-control">
+          <block wx:if="{{item.type === 'slider'}}">
+            <view class="slider-control">
+              <slider
+                value="{{item.value}}"
+                min="{{item.min || 0}}"
+                max="{{item.max || 100}}"
+                step="{{item.step || 1}}"
+                activeColor="#0792ff"
+                backgroundColor="#dbe5ef"
+                block-color="#ffffff"
+                block-size="24"
+                data-key="{{item.key}}"
+                data-index="{{fieldIndex}}"
+                bindchange="onFormInput"
+              />
+              <text>{{item.value}}</text>
+            </view>
+          </block>
+
+          <block wx:elif="{{item.type === 'select'}}">
+            <picker
+              mode="selector"
+              range="{{item.optionLabels}}"
+              value="{{item.selectedIndex}}"
+              data-key="{{item.key}}"
+              data-index="{{fieldIndex}}"
+              bindchange="onSelectChange"
+            >
+              <view class="picker-value">{{item.displayValue || item.placeholder || '请选择'}}</view>
+            </picker>
+          </block>
+
+          <block wx:elif="{{item.type === 'date'}}">
+            <picker
+              mode="date"
+              value="{{item.value}}"
+              start="{{item.start || '1900-01-01'}}"
+              end="{{item.end || '2099-12-31'}}"
+              data-key="{{item.key}}"
+              data-index="{{fieldIndex}}"
+              bindchange="onFormInput"
+            >
+              <view class="picker-value">{{item.value || item.placeholder || '请选择日期'}}</view>
+            </picker>
+          </block>
+
+          <block wx:elif="{{item.type === 'color'}}">
+            <view class="color-control">
+              <view
+                wx:for="{{item.options}}"
+                wx:for-item="color"
+                wx:for-index="colorIndex"
+                wx:key="value"
+                class="color-option {{item.value === color.value ? 'color-option--active' : ''}}"
+                data-key="{{item.key}}"
+                data-index="{{fieldIndex}}"
+                data-value="{{color.value}}"
+                bindtap="onColorSelect"
+              >
+                <view class="color-swatch" style="background-color: {{color.value}};"></view>
+                <text>{{color.label}}</text>
+              </view>
+            </view>
+          </block>
+
+          <block wx:elif="{{item.type === 'image'}}">
+            <view class="media-control">
+              <view class="image-field">
+                <image wx:if="{{item.value}}" class="image-preview" mode="aspectFill" src="{{item.value}}" bindtap="onPreviewAsset" data-url="{{item.value}}" />
+                <view wx:else class="media-empty">未选择图片</view>
+                <view class="media-actions">
+                  <button class="mini-action mini-action--primary" data-key="{{item.key}}" data-index="{{fieldIndex}}" bindtap="openImageLibrary">图库</button>
+                  <button class="mini-action" data-key="{{item.key}}" data-index="{{fieldIndex}}" bindtap="onChooseImage">上传</button>
+                  <button class="mini-action" data-key="{{item.key}}" data-index="{{fieldIndex}}" bindtap="onClearAsset">清空</button>
+                </view>
+              </view>
+              <input
+                class="line-input"
+                type="text"
+                value="{{item.value}}"
+                placeholder="{{item.placeholder || '也可以填写图片链接'}}"
+                data-key="{{item.key}}"
+                data-index="{{fieldIndex}}"
+                bindinput="onFormInput"
+              />
+            </view>
+          </block>
+
+          <block wx:elif="{{item.type === 'music'}}">
+            <view class="media-control">
+              <view class="music-field">
+                <view class="music-current">
+                  <text class="music-mark">♪</text>
+                  <text>{{item.value ? '已选择音乐' : '未选择音乐'}}</text>
+                </view>
+                <view class="media-actions">
+                  <button class="mini-action mini-action--primary" data-key="{{item.key}}" data-index="{{fieldIndex}}" bindtap="openMusicLibrary">音乐库</button>
+                  <button class="mini-action" data-key="{{item.key}}" data-index="{{fieldIndex}}" bindtap="onChooseMusic">上传</button>
+                  <button class="mini-action" data-key="{{item.key}}" data-index="{{fieldIndex}}" bindtap="onClearAsset">清空</button>
+                </view>
+              </view>
+              <input
+                class="line-input"
+                type="text"
+                value="{{item.value}}"
+                placeholder="{{item.placeholder || '也可以填写音乐链接'}}"
+                data-key="{{item.key}}"
+                data-index="{{fieldIndex}}"
+                bindinput="onFormInput"
+              />
+            </view>
+          </block>
+
+          <block wx:else>
+            <input
+              class="line-input"
+              type="{{item.type === 'number' ? 'number' : 'text'}}"
+              value="{{item.value}}"
+              placeholder="{{item.placeholder || '请输入'}}"
+              maxlength="{{item.maxlength}}"
+              data-key="{{item.key}}"
+              data-index="{{fieldIndex}}"
+              bindinput="onFormInput"
+            />
+          </block>
+          <view wx:if="{{item.msg}}" class="field-msg">{{item.msg}}</view>
+        </view>
+      </view>
+    </block>
   </view>
 
   <view class="notice">
-    <t-icon name="info-circle" size="32rpx" color="#1f6f78" />
-    <text>预览会提交当前内容给后端，并打开后端返回的预览链接。</text>
+    <t-icon name="info-circle" size="30rpx" color="#0792ff" />
+    <text>预览会用当前内容生成临时效果，确认后再立即制作。</text>
   </view>
 
   <view class="action-bar">
     <t-button variant="outline" theme="primary" loading="{{submitting}}" bindtap="onPreview">预览效果</t-button>
     <t-button theme="primary" loading="{{submitting}}" bindtap="onGenerate">立即制作</t-button>
   </view>
+</view>
+
+<view wx:if="{{activeSheet}}" class="sheet-mask" bindtap="closeLibrary"></view>
+<view wx:if="{{activeSheet}}" class="library-sheet" catchtap="noop">
+  <view class="sheet-handle"></view>
+  <view class="library-sheet__head">
+    <view class="library-sheet__title">{{activeSheet === 'text' ? '选择文案' : activeSheet === 'image' ? '选择背景图片' : '选择背景音乐'}}</view>
+    <button class="sheet-close" bindtap="closeLibrary">关闭</button>
+  </view>
+  <block wx:if="{{activeSheet === 'image'}}">
+    <view class="image-sheet__body">
+      <scroll-view wx:if="{{libraryCategories.length}}" scroll-y class="image-menu">
+        <button
+          wx:for="{{libraryCategories}}"
+          wx:key="id"
+          class="image-menu__item {{libraryCid === item.id ? 'image-menu__item--active' : ''}}"
+          data-cid="{{item.id}}"
+          bindtap="onSelectLibraryCategory"
+        >{{item.name}}</button>
+      </scroll-view>
+      <scroll-view scroll-y class="image-content" lower-threshold="120" bindscrolltolower="onLoadMoreLibrary">
+        <view wx:if="{{libraryCid === 999}}" class="image-upload-panel">
+          <view class="image-upload-notice">禁止上传涉黄、涉赌、涉毒、谩骂、恐怖、广告、二维码等违规图片。</view>
+          <button class="image-upload-button" bindtap="onChooseLibraryImage">上传照片</button>
+        </view>
+        <view wx:if="{{libraryLoading && !imageLibrary.length}}" class="image-grid">
+          <view wx:for="{{[1,2,3,4,5,6]}}" wx:key="*this" class="image-card image-card--skeleton">
+            <view class="image-skeleton"></view>
+          </view>
+        </view>
+        <block wx:elif="{{imageLibrary.length}}">
+          <view class="image-grid">
+            <view wx:for="{{imageLibrary}}" wx:key="id" class="image-card" data-url="{{item.url}}" bindtap="onSelectImageItem">
+              <image src="{{item.url}}" mode="aspectFill" lazy-load="{{true}}" />
+              <text>{{item.title}}</text>
+            </view>
+          </view>
+        </block>
+        <view wx:else class="library-empty">暂无图片</view>
+        <view wx:if="{{libraryLoadingMore}}" class="library-more">加载中...</view>
+        <view wx:elif="{{!libraryHasMore && imageLibrary.length}}" class="library-more library-more--done">没有更多了</view>
+      </scroll-view>
+    </view>
+  </block>
+  <block wx:elif="{{activeSheet === 'text'}}">
+    <view class="text-sheet__body">
+      <scroll-view wx:if="{{libraryCategories.length}}" scroll-y class="text-menu">
+        <button
+          wx:for="{{libraryCategories}}"
+          wx:key="id"
+          class="text-menu__item {{libraryCid === item.id ? 'text-menu__item--active' : ''}}"
+          data-cid="{{item.id}}"
+          bindtap="onSelectLibraryCategory"
+        >
+          {{item.name}}
+        </button>
+      </scroll-view>
+      <scroll-view scroll-y class="text-content" lower-threshold="120" bindscrolltolower="onLoadMoreLibrary">
+        <view wx:if="{{libraryLoading && !textLibrary.length}}" class="library-loading">加载中...</view>
+        <block wx:elif="{{textLibrary.length}}">
+          <view
+            wx:for="{{textLibrary}}"
+            wx:key="id"
+            class="text-card"
+            data-content="{{item.content}}"
+            bindtap="onSelectTextItem"
+          >
+            <view class="text-card__head">
+              <view class="text-card__title">{{item.title}}</view>
+              <view class="text-card__tag">{{item.categoryName}}</view>
+            </view>
+            <view class="text-card__content">{{item.content}}</view>
+          </view>
+        </block>
+        <view wx:else class="library-empty">暂无文案</view>
+        <view wx:if="{{libraryLoadingMore}}" class="library-more">加载中...</view>
+        <view wx:elif="{{!libraryHasMore && textLibrary.length}}" class="library-more library-more--done">没有更多了</view>
+      </scroll-view>
+    </view>
+  </block>
+  <block wx:else>
+    <scroll-view wx:if="{{libraryCategories.length}}" scroll-x class="library-cates">
+      <button
+        wx:for="{{libraryCategories}}"
+        wx:key="id"
+        class="library-cate {{libraryCid === item.id ? 'library-cate--active' : ''}}"
+        data-cid="{{item.id}}"
+        bindtap="onSelectLibraryCategory"
+      >{{item.name}}</button>
+    </scroll-view>
+    <view wx:if="{{libraryLoading}}" class="library-loading">加载中...</view>
+    <scroll-view wx:else scroll-y class="library-list" lower-threshold="120" bindscrolltolower="onLoadMoreLibrary">
+      <view class="music-list">
+        <view wx:for="{{musicLibrary}}" wx:key="id" class="music-row">
+          <view class="music-icon">♪</view>
+          <view class="music-info">
+            <view class="music-title">{{item.title}}</view>
+            <view class="music-desc">{{item.desc}}</view>
+          </view>
+          <view class="music-actions">
+            <button
+              class="music-test {{previewingMusicId === item.idText ? 'music-test--playing' : ''}}"
+              data-id="{{item.id}}"
+              data-url="{{item.url}}"
+              bindtap="onPreviewMusic"
+            >{{previewingMusicId === item.idText ? '停止' : '试听'}}</button>
+            <button class="music-use" data-url="{{item.url}}" bindtap="onSelectMusicItem">选用</button>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{libraryLoadingMore}}" class="library-more">加载中...</view>
+      <view wx:elif="{{!libraryHasMore}}" class="library-more library-more--done">没有更多了</view>
+    </scroll-view>
+  </block>
 </view>
 
 <login-sheet show="{{showLogin}}" bind:close="onCloseLogin" bind:success="onLoginSuccess" />

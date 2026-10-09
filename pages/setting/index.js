@@ -50,7 +50,10 @@ Page({
 
   onEleClick(e) {
     const { title, url } = e.currentTarget.dataset.data;
-    if (url) return;
+    if (url) {
+      wx.navigateTo({ url });
+      return;
+    }
     if (title === '隐私') {
       wx.navigateTo({
         url: '/pages/agreement/index?type=privacy',

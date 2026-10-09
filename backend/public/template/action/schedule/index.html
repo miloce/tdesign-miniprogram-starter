@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #fff;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 12px; /* 增大字号，提升可读性 */
+            line-height: 1.6;
+            padding: 15px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .header {
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .count-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+        }
+        .count {
+            font-size: 11px;
+            color: #666;
+            background: #f5f5f5;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        .control-btn {
+            font-size: 11px;
+            padding: 3px 9px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .control-btn:hover {
+            background: #e5e5e5;
+            color: #222;
+        }
+        .control-btn:active {
+            background: #dcdcdc;
+            transform: translateY(1px);
+        }
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px; /* 适当增大间距，避免拥挤 */
+        }
+        .tag {
+            padding: 4px 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            color: #444;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+        .tag:hover {
+            background: #f0f0f0;
+            border-color: #ddd;
+        }
+        .tag.highlighted {
+            background-color: #FFE6EF; /* 更柔和的粉色背景 */
+            color: #D6336C; /* 深色文字提升对比度 */
+            border-color: #FFC0CB;
+            font-weight: 500;
+        }
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .source-url {
+            font-size: 12px;
+            color: #b9bcbf;
+            margin-left: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div id="title" class="title">人生已完成清单</div>
+    <div class="count-bar">
+        
+        
+        <div class="count">已完成：<span id="completedCount">0</span>/<span id="totalCount">100</span></div>
+        <button class="control-btn" id="clearBtn">清空已选</button>
+        <div class="source-url">来源: <a id="url" href="javascript:;" target="_blank" style="text-decoration: none;color:#b9bcbf;"></a></div>
+        <!--<button class="control-btn" id="saveBtn">保存截图</button>-->
+    </div>
+</div>
+<div class="tag-container" id="tagContainer">
+    <!-- 标签动态生成 -->
+</div>
+<div class="toast" id="toast">截图已保存到相册</div>
+
+<script>
+    let dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    const tags = (typeof dataInfo !== 'undefined' && dataInfo?.content) ? dataInfo.content.split('\r\n') : [];
+    document.getElementById('title').innerText = dataInfo.title;
+
+    // 初始化DOM
+    const tagContainer = document.getElementById('tagContainer');
+    const completedCountEl = document.getElementById('completedCount');
+    const totalCountEl = document.getElementById('totalCount');
+    const clearBtn = document.getElementById('clearBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const toast = document.getElementById('toast');
+    const body = document.body;
+    const titleDiv = document.querySelector('.title');
+    const sourceUrlDiv = document.createElement('div');
+    sourceUrlDiv.classList.add('source-url');
+	
+	function generateRandomLetter() {
+		const excludedLetters = ['O', 'I']; // 排除的字母
+		const alphabet = 'ABCDEFGHJKLMNOPQRSTUVWXYZ'; // 字母表，去掉 O 和 I
+		const randomIndex = Math.floor(Math.random() * alphabet.length); // 随机选择一个索引
+		return alphabet[randomIndex]; // 返回随机字母
+	}
+    
+    document.getElementById('url').innerText = "360ka.cn/" + dataInfo.nid + generateRandomLetter();
+    document.getElementById('url').href = "http://360ka.cn/" + dataInfo.nid + generateRandomLetter();
+    
+    //sourceUrlDiv.innerHTML = '11来源: <a href="http://dw5.cn/'+ dataInfo.nid +'" target="_blank" style="text-decoration: none;color:#d9dde1;">dw5.cn/'+ dataInfo.nid + generateRandomLetter() +'</a>';
+
+	//titleDiv.appendChild(sourceUrlDiv);
+	
+    // 在页面加载时读取 localStorage 中保存的数据
+const savedHighlights = JSON.parse(localStorage.getItem('lifeListHighlights') || '[]');
+
+// 初始化已完成标签数量
+let completedCount = savedHighlights.length;
+
+// 初始化标签总数量
+const totalCount = tags.length;
+
+// 更新显示的已完成数量和总数量
+completedCountEl.textContent = completedCount;
+totalCountEl.textContent = totalCount;
+
+// 渲染标签并设置已完成的状态
+tags.forEach(tagText => {
+    const tagEl = document.createElement('span');
+    tagEl.className = 'tag';
+    tagEl.textContent = tagText;
+    
+    // 如果标签在 savedHighlights 中，表示已完成
+    if (savedHighlights.includes(tagText)) {
+        tagEl.classList.add('highlighted');
+    }
+
+    // 点击事件：切换标签完成状态，并更新状态
+    tagEl.addEventListener('click', () => {
+        tagEl.classList.toggle('highlighted');
+        updateSavedState();
+    });
+    tagContainer.appendChild(tagEl);
+});
+
+// 更新已完成标签的数据和 localStorage
+function updateSavedState() {
+    // 获取所有已选中的标签
+    const currentHighlights = Array.from(document.querySelectorAll('.tag.highlighted')).map(el => el.textContent);
+    
+    // 保存更新后的数据到 localStorage
+    localStorage.setItem('lifeListHighlights', JSON.stringify(currentHighlights));
+    
+    // 更新已完成数量并显示
+    completedCount = currentHighlights.length;
+    completedCountEl.textContent = completedCount;
+}
+
+
+
+    // 清空已选
+    clearBtn.addEventListener('click', () => {
+        document.querySelectorAll('.tag.highlighted').forEach(tag => {
+            tag.classList.remove('highlighted');
+        });
+        updateSavedState();
+        showToast("已清空所有选择");
+    });
+
+    
+
+    // 提示框
+    function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
+
+    // 更新状态
+    function updateSavedState() {
+        const currentHighlights = Array.from(document.querySelectorAll('.tag.highlighted')).map(el => el.textContent);
+        localStorage.setItem('lifeListHighlights', JSON.stringify(currentHighlights));
+        completedCount = currentHighlights.length;
+        completedCountEl.textContent = completedCount;
+    }
+
+    // 初始化
+    completedCount = savedHighlights.length;
+    completedCountEl.textContent = completedCount;
+    totalCountEl.textContent = tags.length;
+    window.parent.postMessage({ source: 'pages', type: 'showBtn' }, '*');
+    window.parent.postMessage({ source: 'pages', type: 'mpBack' }, '*');
+</script>
+</body>
+</html>

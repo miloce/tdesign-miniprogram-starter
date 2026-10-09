@@ -1,0 +1,41 @@
+<view class="page">
+  <nav title-text="订单中心" />
+  <scroll-view scroll-y="{{true}}" class="list-scroll">
+    <view wx:for="{{orders}}" wx:key="outTradeNo" class="list-item">
+      <view class="item-head">
+        <view class="item-type">{{item.typeText}}</view>
+        <view class="item-status status-{{item.status}}">{{item.statusText}}</view>
+      </view>
+
+      <view class="item-desc">{{item.description}}</view>
+
+      <view class="item-meta">
+        <text>订单号：{{item.outTradeNo}}</text>
+      </view>
+      <view class="item-meta">
+        <text>金额：¥{{item.amountYuan}}</text>
+      </view>
+      <view class="item-meta">
+        <text>创建时间：{{item.createdAt}}</text>
+      </view>
+      <view class="item-meta" wx:if="{{item.paidAt}}">
+        <text>支付时间：{{item.paidAt}}</text>
+      </view>
+
+      <button class="copy-btn native-button" data-outtradeno="{{item.outTradeNo}}" bindtap="onCopy">复制订单号</button>
+    </view>
+
+    <view class="load-text" wx:if="{{loading}}">加载中...</view>
+    <view class="empty-container" wx:if="{{empty}}">
+      <view class="empty-icon">
+        <t-icon name="wallet" size="112rpx" />
+      </view>
+      <text class="empty-text">暂无订单记录</text>
+      <view class="create-btn" bindtap="goHome">
+        <text>返回首页</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<login-sheet show="{{showLogin}}" bind:close="onCloseLogin" bind:success="onLoginSuccess" />

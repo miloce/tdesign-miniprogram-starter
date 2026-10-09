@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>❄ 冬至好运爆发</title>
+    <script src="/template/barrage/total/script.js"></script>
+    <script src="/template/barrage/total/script2.js"></script>
+    <style>
+        /* 自定义动画 */
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
+        }
+        @keyframes popupIn {
+            from { transform: scale(0) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        @keyframes steam-rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            20% { opacity: 0.6; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-60px) scale(3); opacity: 0; }
+        }
+        @keyframes loading {
+            0% { width: 0%; opacity: 0.5; }
+            50% { width: 100%; opacity: 1; }
+            100% { width: 0%; opacity: 0.5; left: 100%; }
+        }
+        /* 粒子爆炸动画 */
+        @keyframes particle-fade {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* 实用 CSS 类 */
+        .steam-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            filter: blur(5px);
+            animation: steam-rise 2.5s infinite linear;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 200;
+            animation: particle-fade 0.8s ease-out forwards;
+        }
+
+        /* 禁止选中文本，优化触摸体验 */
+        body {
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* 淡入加载动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+        
+        /* 礼物盒轻微抖动动画（悬浮时） */
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg) translate(0, 0); }
+            25% { transform: rotate(1deg) translate(1px, -1px); }
+            50% { transform: rotate(-1deg) translate(-1px, 1px); }
+            75% { transform: rotate(1deg) translate(-1px, -1px); }
+        }
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white font-sans overflow-hidden fixed inset-0 w-full h-full">
+
+    <!-- 背景音乐 (隐藏，点击页面自动播放) -->
+    <audio id="bgMusic" loop src="https://sf5-hl-cdn-tos.douyinstatic.com/obj/ies-music/1653551940968455.mp3"></audio>
+
+    <!-- 计分板 (初始隐藏) -->
+    <div id="score-board" class="absolute top-6 left-6 z-[100] transition-all duration-500 opacity-0 transform -translate-y-10">
+        <div class="bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
+            <div class="w-3 h-3 bg-amber-400 rounded-full animate-pulse"></div>
+            <!-- 原来：<span class="text-sm font-bold tracking-widest text-white">已吃 <span id="score-count" class="text-amber-300 text-lg">0</span> 个汤圆</span> -->
+            <!-- 替换为可由后端控制的 th 文案（保留 score-count 供 JS 更新） -->
+            <span class="text-sm font-bold tracking-widest text-white">
+                <span>已收</span>&nbsp;
+                <span id="score-count" class="text-amber-300 text-lg">0</span>&nbsp;
+                <span>个祝福</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- 背景图片层 (初始模糊) -->
+    <div id="bg-layer" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-1000 blur-md" 
+         style="background-image: url(https://picx.zhimg.com/80/v2-416d08256a837ad3b2e784c7e4b86225_720w.webp);">
+    <!-- 黑色遮罩 -->
+    <div id="bg-overlay" class="absolute inset-0 bg-black/40 transition-opacity duration-1000"></div>
+    </div>
+
+    <!-- 雪花容器 -->
+    <div id="snow-container" class="absolute inset-0 pointer-events-none z-0"></div>
+
+    <!-- 主要内容区 -->
+    <div id="main-content" class="relative z-10 w-full h-full flex flex-col items-center justify-center transition-all duration-700">
+        
+        <!-- 标题 -->
+        <div id="title-section" class="text-center mb-12 transition-all duration-500">
+            <h1 class="text-4xl font-bold tracking-widest text-white drop-shadow-lg mb-3" style="font-family: 'Noto Serif SC', serif; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                <span id="title">冬至 · 安康</span>
+            </h1>
+            <p class="text-white/80 text-sm tracking-[0.2em] font-light drop-shadow-md">
+                <span id="ftitle">收下这个祝福，接收你的好运</span>
+            </p>
+        </div>
+
+        <!-- 模拟吃汤圆互动区 -->
+        <div id="spoon-wrapper" class="relative w-48 h-48 flex items-center justify-center cursor-pointer group tap-highlight-transparent">
+
+            <!-- 光效 -->
+            <div id="glow-effect" class="absolute inset-0 bg-amber-500/20 rounded-full blur-3xl transition-all duration-500 scale-100 group-hover:scale-110"></div>
+
+            <!-- 图片容器 -->
+            <div id="spoon-anim-target" class="relative transition-all duration-1000 ease-in-out hover:scale-105">
+                <!-- 礼物盒子图片（添加了多个CSS效果类） -->
+                <img 
+                    id="tangyuan" 
+                    src="https://pic3.zhimg.com/v2-ab78ca5915833033add1059e88b8ac0e_1440w.jpg" 
+                    alt="礼物盒子" 
+                    class="w-48 h-48 object-contain transition-all duration-500 hover:rotate-3 hover:shadow-xl hover:translate-y-[-5px] hover:scale-[1.02]
+             relative group/item opacity-0 animate-fade-in hover:animate-shake"
+                >
+            
+            </div>
+
+            <!-- 提示文字 -->
+            <div id="tap-hint" class="absolute -bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap text-white/80 animate-pulse text-sm font-light tracking-widest drop-shadow-md">
+                👆点击图片收下
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗图层容器 -->
+    <div id="popup-layer" class="absolute inset-0 z-50 overflow-hidden pointer-events-none hidden"></div>
+    
+<script>
+let dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+document.getElementById("title").innerText = dataInfo.title;
+document.getElementById("ftitle").innerText = dataInfo.ftitle;
+document.getElementById("bg-layer").style.backgroundImage = "url('"+ dataInfo.backgroundImg +"')";
+
+
+const bgMusic = document.getElementById("bgMusic");
+bgMusic.src = dataInfo.music;
+
+const memeBlessings = dataInfo.content.split("\r\n");
+
+let hasStarted = false;
+let barrageInterval = null;
+let eatCount = 0;
+
+//jiami
+// 获取DOM元素
+const spoonWrapper = document.getElementById('spoon-wrapper');
+const mainContent = document.getElementById('main-content');
+const popupLayer = document.getElementById('popup-layer');
+const titleSection = document.getElementById('title-section');
+const tangyuan = document.getElementById('tangyuan');
+const tapHint = document.getElementById('tap-hint');
+const bgOverlay = document.getElementById('bg-overlay');
+const bgLayer = document.getElementById('bg-layer');
+const scoreBoard = document.getElementById('score-board');
+const scoreCount = document.getElementById('score-count');
+
+// 页面加载
+window.onload = () => {
+    lucide.createIcons();
+    createSnow();
+};
+
+//打开事件
+function onOpenClcik(){
+    
+    // 播放背景音乐
+    bgMusic.volume = 1; // 设置音量为60%
+    bgMusic.loop = true; // 循环播放
+    bgMusic.play().catch(err => {
+        console.log("音频播放失败:", err);
+    });
+}
+    
+
+// 勺子点击事件
+spoonWrapper.addEventListener('click', event => {
+    if (hasStarted) return;
+    
+    hasStarted = true;
+    createParticles(event.clientX, event.clientY);
+
+    if (navigator.vibrate) navigator.vibrate(100);
+    
+    bgMusic.volume = 1; // 设置音量为60%
+    bgMusic.loop = true; // 循环播放
+    bgMusic.play().catch(err => {
+        console.log("音频播放失败:", err);
+    });
+    
+    window.parent.postMessage({ source: 'pages', type: 'showBtn' }, '*');
+
+    // 隐藏光晕效果
+    const glowEffect = document.getElementById('glow-effect');
+    glowEffect.style.opacity = '0';
+
+    // 整个容器一起消失（避免双重动画）
+    const spoonTarget = document.getElementById('spoon-anim-target');
+    spoonTarget.style.transform = 'scale(0)';
+    spoonTarget.style.opacity = '0';
+
+    // 标题消失
+    titleSection.style.opacity = '0';
+    titleSection.style.transform = 'translateY(-50px) scale(1.1) rotate(12deg)';
+
+    // 提示消失
+    tapHint.style.opacity = '0';
+
+    // 背景变化
+    bgOverlay.classList.remove('bg-black/40');
+    bgOverlay.classList.add('bg-black/0');
+    bgLayer.classList.remove('blur-md');
+    bgLayer.style.opacity = '0.8';
+
+    setTimeout(() => {
+        mainContent.style.transform = 'scale(0.95)';
+        mainContent.style.opacity = '0';
+        mainContent.style.pointerEvents = 'none';
+
+        scoreBoard.classList.remove('opacity-0', '-translate-y-10');
+        popupLayer.classList.remove('hidden');
+
+        startPopupBarrage();
+    }, 800);
+});
+
+// 创建雪花效果
+function createSnow() {
+    const container = document.getElementById('snow-container');
+    for (let i = 0; i < 30; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.random() * 15 + 5}" height="${Math.random() * 15 + 5}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M2 12h20"/><path d="M12 2v20"/><path d="m20 20-8-8"/><path d="m4 4 8 8"/><path d="m20 4-8 8"/><path d="m4 20 8-8"/></svg>`;
+        snowflake.className = 'absolute animate-[fall_linear_infinite] text-white/60';
+        snowflake.style.top = '-' + Math.random() * 20 + '%';
+        snowflake.style.left = Math.random() * 100 + '%';
+        snowflake.style.animationDuration = Math.random() * 5 + 5 + 's';
+        snowflake.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(snowflake);
+    }
+}
+
+// 创建粒子效果
+function createParticles(x, y) {
+    const colors = ['#fbbf24', '#f87171', '#ffffff', '#60a5fa'];
+    for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 80 + 30;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+
+        particle.style.setProperty('--tx', tx + 'px');
+        particle.style.setProperty('--ty', ty + 'px');
+
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 800);
+    }
+}
+
+// 开始弹幕
+function startPopupBarrage() {
+    const maxPopups = 20;
+    barrageInterval = setInterval(() => {
+        if (popupLayer.children.length >= maxPopups) {
+            popupLayer.removeChild(popupLayer.firstChild);
+        }
+
+        const blessing = memeBlessings[Math.floor(Math.random() * memeBlessings.length)];
+        const popupWidth = 180;
+        const popupHeight = 100;
+        const maxX = window.innerWidth - popupWidth - 10;
+        const maxY = window.innerHeight - popupHeight - 10;
+        const safeMaxX = Math.max(0, maxX);
+        const safeMaxY = Math.max(0, maxY);
+        const x = Math.random() * safeMaxX + 5;
+        const y = Math.random() * safeMaxY + 5;
+        const styleType = Math.floor(Math.random() * 3);
+
+        const popup = document.createElement('div');
+        popup.className = 'absolute z-50 pointer-events-auto transition-transform active:scale-95 cursor-pointer animate-[popupIn_0.3s_cubic-bezier(0.34,1.56,0.64,1)]';
+        popup.style.left = x + 'px';
+        popup.style.top = y + 'px';
+
+        let gradientClass = '';
+        if (styleType === 0) {
+            gradientClass = 'bg-gradient-to-br from-white/30 to-white/10';
+        } else if (styleType === 1) {
+            gradientClass = 'bg-gradient-to-br from-blue-500/30 to-purple-500/20';
+        } else {
+            gradientClass = 'bg-gradient-to-br from-pink-500/30 to-rose-500/20';
+        }
+
+        popup.innerHTML = `
+            <div class="w-44 backdrop-blur-xl border border-white/40 shadow-2xl rounded-lg overflow-hidden ${gradientClass}">
+                <div class="h-6 bg-white/10 border-b border-white/20 flex items-center gap-1.5 px-3">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-400/90 shadow-sm"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-yellow-400/90 shadow-sm"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-green-400/90 shadow-sm"></div>
+                    <span class="ml-auto text-[9px] text-white/50 font-mono tracking-tighter">SYS_MSG</span>
+                </div>
+                <div class="p-3 flex flex-col items-center gap-1 text-center">
+                    <div class="text-base font-bold text-white tracking-widest drop-shadow-md">
+                        ${blessing}
+                    </div>
+                    <div class="w-full h-[2px] bg-white/10 rounded-full mt-2 overflow-hidden">
+                        <div class="h-full bg-white/70 w-2/3 animate-[loading_1.5s_infinite]"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const handleClick = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            let clickX, clickY;
+            if (e.changedTouches) {
+                clickX = e.changedTouches[0].clientX;
+                clickY = e.changedTouches[0].clientY;
+            } else {
+                clickX = e.clientX;
+                clickY = e.clientY;
+            }
+            eatTangyuan(popup, clickX, clickY);
+        };
+
+        popup.addEventListener('click', handleClick);
+        popup.addEventListener('touchstart', handleClick, { passive: false });
+        popupLayer.appendChild(popup);
+    }, 300);
+}
+
+// 吃汤圆
+function eatTangyuan(popup, x, y) {
+    if (navigator.vibrate) navigator.vibrate(20);
+    if (x && y) createParticles(x, y);
+
+    eatCount++;
+    scoreCount.innerText = eatCount;
+    scoreBoard.firstElementChild.classList.add('scale-110', 'bg-white/40');
+    setTimeout(() => {
+        scoreBoard.firstElementChild.classList.remove('scale-110', 'bg-white/40');
+    }, 100);
+
+    popup.style.transform = 'scale(0.8) translateY(10px)';
+    popup.style.opacity = '0';
+    setTimeout(() => {
+        if (popup.parentNode) popup.parentNode.removeChild(popup);
+    }, 150);
+}
+
+</script>
+</body>
+</html>

@@ -24,7 +24,7 @@ Component({
   },
   methods: {
     updateBackState() {
-      const rootRoutes = ['pages/home/index', 'pages/my/index'];
+      const rootRoutes = ['pages/home/index', 'pages/square/index', 'pages/my/index'];
       const pages = getCurrentPages();
       const current = pages[pages.length - 1];
       const route = current ? current.route : '';

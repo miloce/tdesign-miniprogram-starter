@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title></title>
+    <script src="/template/birthday/barrage/confetti.browser.min.js"></script>
+    <script src="/template/birthday/barrage/gsap.min.js"></script>
+    <style>
+        /* --- 全局样式 --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        /* 背景容器 */
+        #bg_container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; background-size: cover; background-position: center;
+            opacity: 0.8; transition: opacity 1s;
+        }
+
+        /* --- 核心交互层 --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s;
+        }
+
+        /* 蛋糕容器 */
+        .cake-wrapper {
+            position: relative;
+            width: 140px; height: 140px;
+            display: flex; justify-content: center; align-items: flex-end;
+            margin-bottom: 20px;
+            z-index: 2;
+            /* 初始不能点蛋糕，引导点火柴 */
+            pointer-events: none; 
+        }
+
+        .cake-emoji {
+            font-size: 100px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 蜡烛火焰 (严格控制初始不显示) */
+        .candle-flame {
+            position: absolute;
+            top: 25px; /* 调整到蛋糕蜡烛的位置 */
+            width: 16px; height: 26px;
+            background: radial-gradient(ellipse at bottom, #ffeb3b 0%, #ff9800 50%, #ff5722 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 10px #ff9800, 0 0 20px #ffeb3b;
+            transform-origin: center bottom;
+            animation: flicker 0.1s infinite alternate;
+            opacity: 0; /* 初始不可见 */
+            transform: scale(0); /* 初始缩放为0 */
+            z-index: 2;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+            100% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+        }
+
+        /* --- 火柴交互区 --- */
+        .match-container {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10002;
+        }
+
+        /* 火柴本体 (初始显示) */
+        .matchstick {
+            position: relative;
+            width: 100px; height: 12px;
+            background: #8d6e63; /* 木棒颜色 */
+            border-radius: 6px;
+            transform-origin: right center;
+            display: flex; align-items: center;
+            box-shadow: 2px 5px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .matchstick:active {
+            transform: scale(0.95) rotate(-5deg);
+        }
+
+        /* 火柴头 */
+        .matchstick:before {
+            content: '';
+            position: absolute; left: -5px;
+            width: 18px; height: 18px;
+            background: #d32f2f;
+            border-radius: 50%;
+        }
+
+        /* 火柴上的小火苗 (点燃前隐藏) */
+        .match-flame {
+            position: absolute; left: -10px; top: -15px;
+            width: 20px; height: 35px;
+            background: radial-gradient(ellipse at bottom, #fff 0%, #ffeb3b 40%, #ff5722 100%);
+            border-radius: 50% 0 50% 50%;
+            transform: rotate(-15deg) scale(0);
+            opacity: 0; 
+            filter: blur(1px);
+            transform-origin: center bottom;
+        }
+
+        /* 手势提示 */
+        .hand-hint {
+            position: absolute;
+            right: 40%;
+            bottom: 7px;
+            font-size: 30px;
+            animation: fingerTap 1.5s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fingerTap {
+            0% { transform: translateY(0) rotate(-10deg); }
+            50% { transform: translateY(-10px) rotate(-10deg); }
+            100% { transform: translateY(0) rotate(-10deg); }
+        }
+
+        /* 提示卡片 */
+        .start-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            max-width: 85%;
+            margin-bottom: 20px;
+        }
+        .main-title {
+            font-size: 20px; font-weight: 800; color: #333; margin-bottom: 5px;
+        }
+        .sub-hint { font-size: 14px; color: #888; }
+
+        /* --- 满屏特效层 --- */
+        .sticker-item {
+            position: absolute; z-index: 100;
+            padding: 10px 20px;
+            background: white; border-radius: 12px;
+            font-size: 18px; font-weight: bold; color: #444;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 2px solid #fff;
+            white-space: nowrap; user-select: none;
+            opacity: 0;
+            pointer-events: none; 
+        }
+        
+        /* 背景漂浮气球 emoji */
+        .float-balloon {
+            position: absolute; z-index: 50;
+            font-size: 40px; opacity: 0;
+            user-select: none; pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 1. 背景层 -->
+<div id="bg_container"></div>
+
+<!-- 2. 交互层 -->
+<div class="modal-overlay" id="startModal">
+    
+    <!-- 提示文字 -->
+    <div class="start-card" id="startCard">
+        <div class="main-title" id="ui_title">🎂 </div>
+        <div class="sub-hint" id="sub_title">✨</div>
+    </div>
+
+    <!-- 蛋糕区域 -->
+    <div class="cake-wrapper" id="cakeWrapper">
+        <!-- 蜡烛火焰 (初始隐藏) -->
+        <div class="candle-flame" id="candleFlame"></div>
+        <!-- 蛋糕本体 -->
+        <div class="cake-emoji" id="cakeIcon">🎂</div>
+    </div>
+    
+    <!-- 火柴交互区 -->
+    <div class="match-container" id="matchContainer">
+        <div class="matchstick" id="matchstick">
+            <div class="match-flame" id="matchFlame"></div>
+        </div>
+        <div class="hand-hint">👆</div>
+    </div>
+    
+    <audio id="bgMusic" loop preload="auto"></audio>
+
+</div>
+
+<script>
+    let dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    document.getElementById('ui_title').innerText = dataInfo.title;
+    document.getElementById('sub_title').innerText = dataInfo.ftitle;
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.src = dataInfo.music;
+    
+</script>
+<script src="/template/birthday/barrage/script.js?v1005"></script>
+</body>
+</html>

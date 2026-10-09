@@ -3,16 +3,11 @@
 
   <view class="detail__content">
     <view class="detail__title">{{template.title}}</view>
-    <view class="detail__subtitle">{{template.subtitle}}</view>
-
-    <view class="tags">
-      <text wx:for="{{template.tags}}" wx:key="*this">{{item}}</text>
-    </view>
 
     <view class="panel">
       <view class="panel__title">可定制内容</view>
       <view wx:for="{{template.fields}}" wx:key="key" class="field-row">
-        <t-icon name="edit" size="30rpx" color="#1f6f78" />
+        <t-icon name="edit" size="30rpx" color="#0792ff" />
         <text>{{item.label}}</text>
         <text wx:if="{{item.required}}" class="required">必填</text>
       </view>

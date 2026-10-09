@@ -1,4 +1,13 @@
-<t-tab-bar wx:if="{{!hidden}}" value="{{ value }}" theme="tag" split="{{ false }}" bind:change="handleChange">
+<t-tab-bar
+  wx:if="{{!hidden}}"
+  class="custom-tab-bar"
+  style="--td-tab-bar-height: 112rpx;"
+  value="{{ value }}"
+  theme="tag"
+  split="{{ false }}"
+  bind:change="handleChange"
+>
   <t-tab-bar-item icon="home" value="home">首页</t-tab-bar-item>
+  <t-tab-bar-item icon="chat" value="square">广场</t-tab-bar-item>
   <t-tab-bar-item icon="user" value="my">我的</t-tab-bar-item>
 </t-tab-bar>

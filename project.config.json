@@ -16,46 +16,6 @@
       },
       {
         "type": "folder",
-        "value": "mock/code"
-      },
-      {
-        "type": "folder",
-        "value": "mock/dataCenter"
-      },
-      {
-        "type": "folder",
-        "value": "mock/home"
-      },
-      {
-        "type": "folder",
-        "value": "mock/login"
-      },
-      {
-        "type": "folder",
-        "value": "mock/my"
-      },
-      {
-        "type": "folder",
-        "value": "mock/search"
-      },
-      {
-        "type": "file",
-        "value": "mock/index.js"
-      },
-      {
-        "type": "file",
-        "value": "mock/mock.js"
-      },
-      {
-        "type": "file",
-        "value": "mock/request.js"
-      },
-      {
-        "type": "file",
-        "value": "mock/WxMock.js"
-      },
-      {
-        "type": "folder",
         "value": "node_modules"
       },
       {
@@ -145,6 +105,10 @@
       {
         "type": "folder",
         "value": "miniprogram_npm/tdesign-miniprogram/notice-bar"
+      },
+      {
+        "type": "folder",
+        "value": "miniprogram_npm/tdesign-miniprogram/pull-down-refresh"
       },
       {
         "type": "folder",
@@ -280,23 +244,23 @@
       },
       {
         "type": "file",
-        "value": "static/chat/avatar-Andrew.png"
+        "value": "static/home/card0.png"
       },
       {
         "type": "file",
-        "value": "static/chat/avatar-Kingdom.png"
+        "value": "static/home/card1.png"
       },
       {
         "type": "file",
-        "value": "static/chat/avatar-Mollymolly.png"
+        "value": "static/home/card2.png"
       },
       {
         "type": "file",
-        "value": "static/chat/avatar-Paige.png"
+        "value": "static/home/card3.png"
       },
       {
         "type": "file",
-        "value": "static/chat/avatar-Sean.png"
+        "value": "static/home/card4.png"
       },
       {
         "type": "file",
@@ -403,13 +367,6 @@
           "name": "dataCenter",
           "pathName": "pages/dataCenter/index",
           "query": "",
-          "scene": null
-        },
-        {
-          "name": "release",
-          "pathName": "pages/release/index",
-          "query": "",
-          "launchMode": "default",
           "scene": null
         },
         {

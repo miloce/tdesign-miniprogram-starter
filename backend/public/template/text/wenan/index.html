@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
+        * { padding: 0; margin: 0; -webkit-box-sizing: border-box }
+        body { background-color: #fff; margin:0 auto; }
+        a { color: #fff; text-decoration: none }
+
+        /* 页面实际用到的样式 */
+        #app-container { width: 100%; margin: 0 auto; position: relative; font-size: 1em }
+        #start-background { width: 100%; height: 100%; position: absolute; left: 0; top: 0; z-index: 44; background-color: #fff }
+
+        /* 打字/文本区域 */
+        #text-view{
+          width: 100%;
+          padding: 0;
+          white-space: pre-line;
+          background-color: rgba(0, 0, 0, 0);
+          border-radius: 20px;
+          color: #000;
+          font-size: 1rem;
+          line-height: 1.8rem;
+          text-align:left;
+          transform-origin: top left;
+          display: inline-block;
+          --print-ico: "💕";
+        }
+        @keyframes text-flicker { 0% {opacity: 0} 49% {opacity: 0} 50% {opacity: 1} }
+        .cur-end{animation: text-flicker 0.8s infinite;}
+        .print-ing:after {content: var(--print-ico);}
+        .print-end:after {content: var(--print-ico);animation: text-flicker 0.8s infinite;}
+
+        /* 内容容器 */
+        #content-wrapper { position: relative; width: 100%; height:100vh; z-index: 666; display: none; background-repeat: repeat; background-size: 100%; overflow: hidden }
+        #content-overlay { position: absolute; top: 0; right: 0; left: 0; bottom: 0; width: 100%; min-height: 160px; background: rgba(255,255,255,.75) }
+        .content-body { width: 100%; position: absolute; top: 0; right: 0; left: 0; bottom: 0; z-index: 668; -webkit-overflow-scrolling: touch; padding: 10%; font-size: 1.2em; overflow: scroll; display: none }
+
+        /* 封面图 */
+        #content-image { width: 100%; max-height: 320px; object-fit: cover; overflow: hidden; margin: 0 0 15px 0; background-color: #fff; border: 10px solid #fff; border-bottom: 5px solid #fff; border-radius: 3px; display: block }
+        #content-image img { width: 100%; height: 13rem; }
+    </style>
+</head>
+<body style="overflow-x:hidden;overflow-y:hidden;" >
+<div id="app-container">
+    <div id="start-background"></div>
+    <div id="content-wrapper" style="display: block;background-image: url('');">
+        <div id="content-overlay" style="background: rgba(255,255,255,0.70)">
+            <div class="content-body" id="content-body" style="display:black;">
+                <div id="content-image">
+                    <img id="cover" class="content-image-item" src="">
+                </div>
+                <span id="content-text-wrapper" class="text-box">
+                        <div id="text-source" style="display:none;"></div>
+			            <div id="text-view" class="print-ing"></div>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //填充内容
+    var config ={"font-size" : 1, "line-height": 1.8, "color" : "#000"};
+    var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    var opacity = 1 - dataInfo.opacity / 100;
+    document.getElementById('cover').src = dataInfo.coverImg;
+    document.getElementById('content-wrapper').style.backgroundImage = "url('"+ dataInfo.backgroundImg +"')";
+    document.getElementById('text-source').innerText = dataInfo.content.replaceAll('\r\n','<br>');
+    document.getElementById('content-overlay').style.background = "rgba(255,255,255,"+ opacity +")"
+    
+    console.log("opacity：" + opacity);
+    
+    //启用插件
+    dataInfo.plugin = {}
+    
+    //打印文字插件配置信息
+    dataInfo.plugin.printText = {
+        padding: '2rem 2rem 0rem 1.5rem',
+        text: dataInfo.content,
+        fontSize: '1rem',
+        lineHeight: '1.8rem',
+        color: dataInfo.color ? dataInfo.color : '#000',
+        autoPrint: false,
+    }
+</script>
+<script src="/template/common/js/printText.js?v303655367"></script>
+<script>
+    //飘落特效
+    function floatDown(){
+        let assets_host = window.location.origin;
+        if(typeof $ !== 'undefined'){
+            $('body').wpSuperSnow({
+        		flakes: [assets_host + '/template/wenan/images/004.png', assets_host + '/template/wenan/images/003.png', assets_host + '/template/wenan/images/002.png',assets_host + '/template/wenan/images/001.png'],
+        		totalFlakes: '50',
+        		zIndex: '999999',
+        		maxSize: '28',
+        		maxDuration: '20',
+        		useFlakeTrans: false
+        	});
+        }
+    }
+
+    //打开事件
+    function onOpenClcik(){
+        document.getElementById("content-body").style.display = "block";
+        printText();
+        floatDown();
+    }
+
+</script>
+
+<script src="/template/common/js/jquery-2.1.1.min.js"></script>
+<script src="/template/wenan/js/su.js"></script>
+</body>
+</html>

@@ -33,11 +33,12 @@ final class ConfigController extends BaseController
         $config = AppConfigService::make()->save(is_array($input['appConfig'] ?? null) ? $input['appConfig'] : $input);
         if (isset($input['userState']) && is_array($input['userState'])) {
             $service = UserService::make();
-            $user = $service->get($service->openid());
-            $user['points'] = (int)($input['userState']['points'] ?? $user['points']);
-            $user['quota'] = (int)($input['userState']['quota'] ?? $user['quota']);
-            $user['isVip'] = (bool)($input['userState']['isVip'] ?? $user['isVip']);
-            $service->save($user);
+            $service->mutate($service->openid(), function (array $user) use ($input): array {
+                $user['points'] = (int)($input['userState']['points'] ?? $user['points']);
+                $user['quota'] = (int)($input['userState']['quota'] ?? $user['quota']);
+                $user['isVip'] = (bool)($input['userState']['isVip'] ?? $user['isVip']);
+                return $user;
+            });
         }
         return $this->ok(['appConfig' => $config]);
     }

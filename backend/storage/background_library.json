@@ -1,0 +1,324 @@
+{
+  "updatedAt": "2026-05-24T17:21:16.181Z",
+  "source": "local imported background",
+  "categories": [
+    {
+      "id": 0,
+      "name": "全部",
+      "isNew": 0
+    },
+    {
+      "id": 13,
+      "name": "其他",
+      "isNew": 0
+    },
+    {
+      "id": 143,
+      "name": "恋爱",
+      "isNew": 0
+    },
+    {
+      "id": 102,
+      "name": "祝福",
+      "isNew": 0
+    },
+    {
+      "id": 10,
+      "name": "生日",
+      "isNew": 0
+    },
+    {
+      "id": 107,
+      "name": "新年",
+      "isNew": 0
+    },
+    {
+      "id": 108,
+      "name": "烟花",
+      "isNew": 0
+    }
+  ],
+  "items": [
+    {
+      "id": 195,
+      "title": "恋爱背景 195",
+      "url": "https://pic1.zhimg.com/80/v2-64cb4b40036ad46aeab788fdd1a4c2c6_720w.webp",
+      "note": "",
+      "categoryId": 143,
+      "categoryName": "恋爱"
+    },
+    {
+      "id": 201,
+      "title": "其他背景 201",
+      "url": "https://picx.zhimg.com/80/v2-5defcdcea8ea42d0384c0eed83c507a1_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 202,
+      "title": "其他背景 202",
+      "url": "https://pica.zhimg.com/80/v2-e0bb1212228d8a9f269325477de3f6a0_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 200,
+      "title": "恋爱背景 200",
+      "url": "https://pic3.zhimg.com/80/v2-d9bbd1d667b7205dce0b2b570fb2769e_720w.webp",
+      "note": "",
+      "categoryId": 143,
+      "categoryName": "恋爱"
+    },
+    {
+      "id": 166,
+      "title": "其他背景 166",
+      "url": "https://pic1.zhimg.com/80/v2-d9407b493e3d9fd4cf8fd9e73c7d4efe_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 169,
+      "title": "其他背景 169",
+      "url": "https://pica.zhimg.com/80/v2-4510dbd63d4eb9680d6a7dff3c619b14.png",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 168,
+      "title": "其他背景 168",
+      "url": "https://pica.zhimg.com/80/v2-cc9ee8f16cb6b62bcae3a22166c14ed0.png",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 196,
+      "title": "其他背景 196",
+      "url": "https://pic4.zhimg.com/80/v2-a6f45328f770e341a235db02d92481d1_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 177,
+      "title": "其他背景 177",
+      "url": "https://pic4.zhimg.com/v2-0a3415ab5b89cb04393a0aec9c96e625_1440w.jpg",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 131,
+      "title": "其他背景 131",
+      "url": "https://pic3.zhimg.com/80/v2-6a6b6bdeecbb235f42168b5ea723e7f8_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 136,
+      "title": "其他背景 136",
+      "url": "https://picx.zhimg.com/v2-86614790511b4429e05fbfe90cfe31db.jpg",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 215,
+      "title": "其他背景 215",
+      "url": "https://pic1.zhimg.com/80/v2-80f4cdcf548256a9517105eb72eb6058_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 161,
+      "title": "其他背景 161",
+      "url": "https://pic1.zhimg.com/80/v2-c0db17e3e0a2774b1a271a2ab4c3c08e_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 162,
+      "title": "生日背景 162",
+      "url": "https://pic4.zhimg.com/80/v2-31ad5c21ada166136e3537b959e949b3_720w.webp",
+      "note": "",
+      "categoryId": 10,
+      "categoryName": "生日"
+    },
+    {
+      "id": 164,
+      "title": "生日背景 164",
+      "url": "https://pic4.zhimg.com/80/v2-4ae58b64caa0d8ca09c250ce75b1b06f_720w.webp",
+      "note": "",
+      "categoryId": 10,
+      "categoryName": "生日"
+    },
+    {
+      "id": 160,
+      "title": "其他背景 160",
+      "url": "https://picx.zhimg.com/80/v2-82c1811d1221ab18d926ce22277db942_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 158,
+      "title": "其他背景 158",
+      "url": "https://picx.zhimg.com/80/v2-31083229909596ed2d08c3939c0a5fa6_720w.jpeg",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 159,
+      "title": "其他背景 159",
+      "url": "https://pica.zhimg.com/80/v2-6a4de3d4b3a426e2ba73076301e4062e_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 217,
+      "title": "其他背景 217",
+      "url": "https://pic1.zhimg.com/80/v2-11fa1d7a5e12e92babb7b3f8741ac30e_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 216,
+      "title": "其他背景 216",
+      "url": "https://pic2.zhimg.com/80/v2-6cb714b34648667cc760401592b65b6f_720w.webp",
+      "note": "",
+      "categoryId": 13,
+      "categoryName": "其他"
+    },
+    {
+      "id": 213,
+      "title": "恋爱背景 213",
+      "url": "https://pica.zhimg.com/80/v2-d0a832b11dc9952d78ae2c2c00e5692c_720w.webp",
+      "note": "",
+      "categoryId": 143,
+      "categoryName": "恋爱"
+    },
+    {
+      "id": 214,
+      "title": "祝福背景 214",
+      "url": "https://pic1.zhimg.com/80/v2-ac06f4e7373f7a2102c05e624c2e395e_720w.webp",
+      "note": "",
+      "categoryId": 102,
+      "categoryName": "祝福"
+    },
+    {
+      "id": 173,
+      "title": "背景图 173",
+      "url": "https://pic1.zhimg.com/80/v2-1ef483999582ba2c81d9cf547c5b6936_720w.webp",
+      "note": "",
+      "categoryId": 0,
+      "categoryName": "全部"
+    },
+    {
+      "id": 174,
+      "title": "背景图 174",
+      "url": "https://picx.zhimg.com/80/v2-77cfadbaedc11073bc513f681ebc753e_720w.webp",
+      "note": "",
+      "categoryId": 0,
+      "categoryName": "全部"
+    },
+    {
+      "id": 179,
+      "title": "祝福背景 179",
+      "url": "https://pic2.zhimg.com/v2-8e4a61844dd1cd78914668e199f142bd_1440w.jpg",
+      "note": "",
+      "categoryId": 102,
+      "categoryName": "祝福"
+    },
+    {
+      "id": 178,
+      "title": "祝福背景 178",
+      "url": "https://pica.zhimg.com/v2-f9f63c7604f51d3a76aa10dce6c6a8b2_1440w.jpg",
+      "note": "",
+      "categoryId": 102,
+      "categoryName": "祝福"
+    },
+    {
+      "id": 44,
+      "title": "背景图 44",
+      "url": "https://picx.zhimg.com/v2-407b95a00b8ecd065cb9b0b43bd3275e.jpg",
+      "note": "",
+      "categoryId": 0,
+      "categoryName": "全部"
+    }
+  ],
+  "byCategory": {
+    "0": [
+      "195",
+      "201",
+      "202",
+      "200",
+      "166",
+      "169",
+      "168",
+      "196",
+      "177",
+      "131",
+      "136",
+      "215",
+      "161",
+      "162",
+      "164",
+      "160",
+      "158",
+      "159",
+      "217",
+      "216",
+      "213",
+      "214",
+      "173",
+      "174",
+      "179",
+      "178",
+      "44"
+    ],
+    "10": [
+      "162",
+      "164"
+    ],
+    "13": [
+      "201",
+      "202",
+      "166",
+      "169",
+      "168",
+      "196",
+      "177",
+      "131",
+      "136",
+      "215",
+      "161",
+      "160",
+      "158",
+      "159",
+      "217",
+      "216"
+    ],
+    "102": [
+      "214",
+      "179",
+      "178"
+    ],
+    "107": [],
+    "108": [],
+    "143": [
+      "195",
+      "200",
+      "213"
+    ]
+  }
+}

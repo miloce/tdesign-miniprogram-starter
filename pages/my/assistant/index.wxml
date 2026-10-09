@@ -1,0 +1,177 @@
+<view class="assistant-page">
+  <nav title-text="小助手" />
+
+  <view class="assistant-card">
+    <view class="assistant-title">小助手</view>
+    <view class="assistant-desc">登录后按当前权益使用</view>
+  </view>
+
+  <view class="form-card">
+    <view class="form-item">
+      <view class="form-label-row">
+        <view class="form-label">账号</view>
+        <view
+          class="account-history-trigger {{accountHistory.length > 1 ? 'is-active' : ''}}"
+          bindtap="onAccountHistoryToggle"
+          wx:if="{{accountHistory.length > 1}}"
+        >
+          <text class="account-history-badge">{{accountHistory.length}}</text>
+        </view>
+      </view>
+      <input
+        class="form-input"
+        type="text"
+        placeholder="请输入手机号或邮箱"
+        value="{{username}}"
+        maxlength="60"
+        bindinput="onUsernameInput"
+      />
+      <view class="account-history-panel" wx:if="{{showAccountHistory}}">
+        <view class="account-history-head">
+          <text>选择历史账号</text>
+          <text class="account-history-clear" bindtap="onAccountHistoryClear">清空</text>
+        </view>
+        <view
+          class="account-history-item"
+          wx:for="{{accountHistory}}"
+          wx:key="username"
+          data-index="{{index}}"
+          bindtap="onAccountHistorySelect"
+        >
+          <view class="account-history-main">
+            <text class="account-history-name">{{item.username}}</text>
+            <text class="account-history-step">{{item.stepText}}</text>
+          </view>
+          <view
+            class="account-history-delete"
+            data-index="{{index}}"
+            catchtap="onAccountHistoryDelete"
+          >
+            删除
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">密码</view>
+      <input
+        class="form-input"
+        type="password"
+        password="{{true}}"
+        placeholder="请输入密码"
+        value="{{password}}"
+        maxlength="40"
+        bindinput="onPasswordInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">数值</view>
+      <input
+        class="form-input"
+        type="number"
+        placeholder="请输入1000-98800之间的数值"
+        value="{{step}}"
+        maxlength="6"
+        bindinput="onStepInput"
+      />
+      <view class="form-hint">支持范围 1000 - 98800</view>
+    </view>
+
+    <button class="submit-btn" bindtap="submitSteps" disabled="{{isLoading}}">
+      {{isLoading ? '处理中...' : '立即设置'}}
+    </button>
+  </view>
+
+  <view class="schedule-card">
+    <view class="schedule-head">
+      <view>
+        <view class="schedule-title">自动任务</view>
+        <view class="schedule-subtitle">会员可用，每天自动执行一次</view>
+      </view>
+      <view class="schedule-state">
+        <text class="schedule-badge {{schedule.enabledClass}}">{{schedule.enabledText}}</text>
+        <switch checked="{{schedule.enabled}}" bindchange="onScheduleToggle" color="#0f58d2" />
+      </view>
+    </view>
+
+    <view class="schedule-summary {{schedule.enabled ? 'is-enabled' : ''}}">
+      <view class="schedule-summary-main">
+        <text class="schedule-summary-label">{{schedule.enabled ? '下次执行' : '任务未开启'}}</text>
+        <text class="schedule-summary-value">{{schedule.enabled && schedule.nextRunText ? schedule.nextRunText : '开启后按设定时间运行'}}</text>
+      </view>
+    </view>
+
+    <view class="schedule-range-block">
+      <view class="schedule-label">每日随机数值</view>
+      <view class="schedule-range-inputs">
+        <input
+          class="schedule-range-input"
+          type="number"
+          maxlength="6"
+          value="{{schedule.stepsMin}}"
+          placeholder="最小值"
+          bindinput="onScheduleStepsMinInput"
+        />
+        <text class="schedule-range-separator">至</text>
+        <input
+          class="schedule-range-input"
+          type="number"
+          maxlength="6"
+          value="{{schedule.stepsMax}}"
+          placeholder="最大值"
+          bindinput="onScheduleStepsMaxInput"
+        />
+      </view>
+      <view class="schedule-range-hint">每天首次执行时随机取值，失败重试沿用当天数值</view>
+    </view>
+
+    <view class="schedule-row">
+      <view>
+        <view class="schedule-label">执行时间</view>
+        <view class="schedule-value">{{schedule.time}}</view>
+      </view>
+      <picker mode="time" value="{{schedule.time}}" bindchange="onScheduleTimeChange">
+        <view class="schedule-action">选择</view>
+      </picker>
+    </view>
+
+    <view class="schedule-row">
+      <view>
+        <view class="schedule-label">完成通知</view>
+        <view class="schedule-notice-line">
+          <text class="schedule-badge {{schedule.noticeClass}}">{{schedule.noticeText}}</text>
+        </view>
+      </view>
+      <button class="schedule-link native-button {{schedule.subscribed ? 'is-secondary' : ''}}" bindtap="subscribeScheduleMessage" disabled="{{scheduleSubscribing}}">
+        {{scheduleSubscribing ? '订阅中' : schedule.subscribeButtonText}}
+      </button>
+    </view>
+    <view class="schedule-tip {{schedule.noticeClass}}">
+      {{schedule.subscribeHint}}
+    </view>
+
+    <view class="schedule-meta" wx:if="{{schedule.lastRunText}}">
+      <text>上次：{{schedule.lastRunText}}</text>
+      <text class="{{schedule.lastResultSuccess ? 'schedule-ok' : 'schedule-fail'}}">{{schedule.lastResultText}}</text>
+    </view>
+
+    <button class="schedule-save-btn" bindtap="saveSchedule" disabled="{{scheduleSaving}}">
+      {{scheduleSaving ? '保存中...' : schedule.saveButtonText}}
+    </button>
+  </view>
+</view>
+
+<view class="loading-mask" wx:if="{{isLoading}}">
+  <view class="loading-panel">
+    <view class="wandering-eyes" aria-role="progressbar" aria-label="处理中">
+      <view class="wandering-eyes__eye"></view>
+      <view class="wandering-eyes__eye"></view>
+    </view>
+    <view class="loading-title">处理中...</view>
+    <view class="loading-desc">请稍候，正在处理</view>
+  </view>
+</view>
+
+<login-sheet show="{{showLogin}}" bind:close="onCloseLogin" bind:success="onLoginSuccess" />

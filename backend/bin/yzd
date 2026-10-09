@@ -8,30 +8,151 @@ $root = dirname(__DIR__);
 require_once $root . '/vendor/autoload.php';
 
 use Yzd\Services\AppConfigService;
-use Yzd\Services\TemplateDefaults;
+use Yzd\Services\AssistantScheduleService;
+use Yzd\Services\Database;
+use Yzd\Services\EnvLoader;
+use Yzd\Services\ObjectStorageService;
+use Yzd\Services\TemplateMetricsService;
 use Yzd\Services\TemplateRepository;
+use Yzd\Services\WebTemplateService;
+
+EnvLoader::load($root);
 
 $command = $argv[1] ?? 'help';
 
 if ($command === 'check') {
+    $database = Database::make()->status();
+    $objectStorage = ObjectStorageService::make();
+    $storageOk = is_dir($root . '/storage') && is_writable($root . '/storage');
+    $objectStorageOk = $objectStorage->enabled() || $objectStorage->driver() === 'local';
     echo 'PHP: ' . PHP_VERSION . PHP_EOL;
     echo 'Framework: ThinkPHP' . PHP_EOL;
     echo 'Autoload: OK' . PHP_EOL;
-    echo 'Storage: ' . (is_dir($root . '/storage') && is_writable($root . '/storage') ? 'OK' : 'NOT WRITABLE') . PHP_EOL;
-    exit(0);
+    echo 'Storage: ' . ($storageOk ? 'OK' : 'NOT WRITABLE') . PHP_EOL;
+    echo 'Database: ' . ($database['ok'] ? 'OK' : strtoupper((string)$database['message'])) . PHP_EOL;
+    $objectStorageStatus = $objectStorage->enabled()
+        ? 'LightCOS OK'
+        : ($objectStorage->driver() === 'local' ? 'LOCAL' : 'LightCOS CONFIG MISSING');
+    echo 'Object Storage: ' . $objectStorageStatus . PHP_EOL;
+    echo 'Object Bucket: ' . $objectStorage->bucket() . PHP_EOL;
+    exit($storageOk && (!$database['enabled'] || $database['ok']) && $objectStorageOk ? 0 : 1);
 }
 
 if ($command === 'init') {
-    $baseUrl = rtrim(getenv('YZD_PUBLIC_BASE_URL') ?: 'http://127.0.0.1:8000', '/');
+    Database::make()->status();
     AppConfigService::make()->get();
-    (new TemplateRepository($root . '/storage'))->reset(TemplateDefaults::all($baseUrl));
+    (new TemplateRepository($root . '/storage'))->reset([]);
+    WebTemplateService::make()->clearCache();
     echo 'Init: OK' . PHP_EOL;
     exit(0);
 }
 
+if ($command === 'rebuild-template-cache') {
+    WebTemplateService::make()->clearCache();
+    $files = WebTemplateService::make()->files();
+    echo 'Template cache: ' . count($files) . ' files' . PHP_EOL;
+    exit(0);
+}
+
+if ($command === 'rebuild-template-metrics') {
+    $shortBaseUrl = (string)(getenv('YZD_SHORT_BASE_URL') ?: getenv('YZD_PUBLIC_BASE_URL') ?: 'https://y.miloce.cn');
+    $summary = TemplateMetricsService::make()->rebuildUsage($shortBaseUrl);
+    echo 'Template metrics: records=' . $summary['records'] . ' templates=' . $summary['templates'] . PHP_EOL;
+    exit(0);
+}
+
+if ($command === 'flush-template-metrics') {
+    $summary = TemplateMetricsService::make()->flushQueue();
+    echo 'Template metric queue: events=' . $summary['events'] . ' templates=' . $summary['templates'] . PHP_EOL;
+    exit(0);
+}
+
+if ($command === 'run-assistant-schedules') {
+    $limit = 50;
+    foreach ($argv as $arg) {
+        if (preg_match('/^--limit=(\d+)$/', (string)$arg, $match)) {
+            $limit = max(1, min(500, (int)$match[1]));
+        }
+    }
+
+    $summary = AssistantScheduleService::make()->runDue($limit);
+    echo 'Assistant schedules: count=' . $summary['count'] . PHP_EOL;
+    foreach ($summary['items'] as $item) {
+        echo sprintf(
+            "  - %s %s %s%s",
+            (string)($item['taskId'] ?? ''),
+            !empty($item['success']) ? 'OK' : 'FAIL',
+            (string)($item['message'] ?? ''),
+            PHP_EOL
+        );
+    }
+    exit(0);
+}
+
+if ($command === 'rebuild-template-summary') {
+    $baseUrl = (string)(getenv('YZD_PUBLIC_BASE_URL') ?: 'https://y.miloce.cn');
+    $count = (new TemplateRepository($root . '/storage'))->rebuildSummaryCache($baseUrl, []);
+    echo 'Template summary: ' . $count . ' templates' . PHP_EOL;
+    exit(0);
+}
+
+if ($command === 'load-templates') {
+    $baseUrl = (string)(getenv('YZD_PUBLIC_BASE_URL') ?: 'https://y.miloce.cn');
+    $summary = (new TemplateRepository($root . '/storage'))->loadFromTemplateFiles($baseUrl, []);
+    echo 'Templates loaded: inserted=' . $summary['inserted']
+        . ' updated=' . $summary['updated']
+        . ' skipped=' . $summary['skipped']
+        . ' total=' . $summary['total']
+        . PHP_EOL;
+    exit(0);
+}
+
+if ($command === 'sync-static-to-cos') {
+    $dryRun = in_array('--dry-run', $argv, true);
+    $objectStorage = ObjectStorageService::make();
+    if (!$dryRun && !$objectStorage->enabled()) {
+        echo 'Object Storage: missing LightCOS config. Set YZD_STORAGE_DRIVER=lightcos, YZD_COS_SECRET_ID and YZD_COS_SECRET_KEY.' . PHP_EOL;
+        exit(1);
+    }
+
+    $dirs = ['static', 'template', 'assets', 'uploads'];
+    $failed = 0;
+    foreach ($dirs as $dir) {
+        $localRoot = $root . '/public/' . $dir;
+        if (!is_dir($localRoot)) {
+            echo $dir . ': skipped (not found)' . PHP_EOL;
+            continue;
+        }
+
+        $summary = $objectStorage->uploadDirectory($localRoot, $dir, $dryRun);
+        $failed += (int)$summary['failed'];
+        echo sprintf(
+            "%s: scanned=%d uploaded=%d skipped=%d failed=%d%s",
+            $dir,
+            $summary['scanned'],
+            $summary['uploaded'],
+            $summary['skipped'],
+            $summary['failed'],
+            PHP_EOL
+        );
+        foreach (array_slice($summary['errors'], 0, 5) as $error) {
+            echo '  - ' . $error . PHP_EOL;
+        }
+    }
+
+    exit($failed > 0 ? 1 : 0);
+}
+
 echo <<<TEXT
 Usage:
-  php bin/yzd check  Check runtime prerequisites
-  php bin/yzd init   Initialize config and default templates
+  php bin/yzd check                           Check runtime prerequisites
+  php bin/yzd init                            Initialize config and clear template overrides
+  php bin/yzd rebuild-template-cache          Rebuild parsed web template cache
+  php bin/yzd rebuild-template-metrics        Rebuild template usage counters from records
+  php bin/yzd flush-template-metrics          Flush queued template view counters
+  php bin/yzd run-assistant-schedules         Run due assistant schedules
+  php bin/yzd rebuild-template-summary        Rebuild lightweight admin template summaries
+  php bin/yzd load-templates                  Load templates/web/*.html into database storage
+  php bin/yzd sync-static-to-cos [--dry-run]  Upload public static assets to LightCOS
 
 TEXT;

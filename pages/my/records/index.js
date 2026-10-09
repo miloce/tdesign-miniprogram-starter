@@ -27,11 +27,14 @@ Page({
     this.setData({ loading: true });
     try {
       const res = await request('/code/records');
-      const records = res.data.data || [];
+      const records = res.data || [];
       this.setData({
         records,
         empty: records.length === 0,
       });
+    } catch (err) {
+      this.setData({ records: [], empty: true });
+      wx.showToast({ title: (err && err.message) || '记录加载失败', icon: 'none' });
     } finally {
       this.setData({ loading: false });
     }

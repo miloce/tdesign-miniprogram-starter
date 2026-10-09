@@ -1,0 +1,227 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    -webkit-box-sizing: border-box;
+}
+
+body {
+    background-color: white;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+#div_container {
+    /*最外层div，用于居中兼容PC和移动*/
+    width: 500px;
+    margin: 0px auto;
+    position: relative;
+    /*background-color: #FAFAFA;*/
+    font-size: 1em;
+}
+
+.div_pure_words {
+    /*文字部分的最外层，用于定位*/
+    position: relative;
+    display: none;
+}
+
+.div_pure_words_bg {
+    /*背景设置在这里*/
+    background-repeat: repeat;
+    background-size: 100%;
+    background-attachment: fixed;
+    width: 500px;
+    min-height: 500px;
+}
+
+.div_pure_words_height {
+    visibility: hidden;
+    padding: 30px;
+    text-align: justify;
+    /*为了使文字两端对齐 */
+    white-space: pre-wrap;
+    /*保留换行效果*/
+    font-size: 1.1em;
+    font-family: 'Microsoft YaHei', 'Arial';
+    color: white;
+}
+
+.div_pw_typed {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /*4个方向定位使div充满整个画画*/
+    top: 0;
+    bottom: 0;
+    /*4个方向定位使div充满整个画画*/
+    width: 500px;
+    background: rgba(255, 255, 255, 0.8);
+    /*半透明效果*/
+    padding: 30px;
+    text-align: justify;
+    /*为了使文字两端对齐 */
+}
+
+#span_pw_typed {
+    width: 85%;
+    /*为了使文字两端对齐 */
+    white-space: pre-wrap;
+    /*保留换行效果*/
+    font-size: 1.1em;
+    font-family: 'Microsoft YaHei', 'Arial';
+    display:inline-block;
+    margin-top:50px;
+}
+
+#div_start_bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 44;
+    background-color: white;
+}
+.typed-cursor{
+    opacity: 1;
+    color: red;
+}
+        
+#div_btn_inner{ /*按钮部分内层，用于定位*/
+    color:white; 
+    text-shadow:1px 1px 1px #000;            
+    width: 500px;
+    padding-left: 430px;
+}
+
+
+#div_music {
+    border: none;
+    top: 30px; 
+    background-image: url('http://file.top112.top/h5-fans/confession/1/music_note_big.png');
+}
+#div_record {
+    top: 100px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+      
+
+.div_music_tips{  
+    position: fixed;
+    top: 70px; 
+    z-index:999;
+}
+.div_record_tips{  
+    position: fixed;
+    top: 140px;
+    z-index:999;
+}
+
+.div_btn_big {
+    position: fixed;
+    cursor: pointer; 
+    width: 52px; 
+    background-color: rgba(112,128,144, 0.6); 
+    border-radius: 5px; 
+    padding: 10px 0px;
+    font-size: 1.1em;
+    line-height: 1.3em;
+    text-align: center; 
+    z-index:999;
+}
+#div_s_upload {
+    top: 360px;
+}
+#div_s_sound {
+    top: 440px;
+}
+#div_s_choose {
+    top: 520px;
+}
+#div_s_qa {
+    top: 600px;
+}
+
+@-webkit-keyframes music_play_rotate{
+    0%{
+        -webkit-transform:rotate(0deg);
+    }
+    100%{
+        -webkit-transform:rotate(360deg);
+    }
+}
+@-webkit-keyframes btn_rotate{ /*帮助按钮的动画*/
+    0%  {
+        -webkit-transform:rotate(0deg);
+    }
+    40% {
+        -webkit-transform:rotate(0deg);
+    }
+    50% {
+        -webkit-transform:rotate(30deg);
+    }
+    60% {
+        -webkit-transform:rotate(0deg);
+    }
+    70% {
+        -webkit-transform:rotate(30deg);
+    }
+    80% {
+        -webkit-transform:rotate(0deg);
+    }
+    100% {
+        -webkit-transform:rotate(0deg);
+    }
+}
+
+
+
+#div_container>#div_hearttree{
+	display: none;
+	width: 100%;
+	position: relative;
+	z-index: 666;
+	
+}
+#div_tree_start{
+	width: 500px;
+	height: 815px;
+	position: absolute;
+	left: 0px; top: 0px;
+	z-index: 667;
+	background-color: rgba(255,255,255,0);
+}
+#div_tree_error,#div_tree_text{
+	display: none;
+	width: 420px;
+	left: 40px; 
+	top: 25px;
+	position: absolute;
+	font-size: 1.1em;
+}
+#div_tree_main{
+	position: relative;
+	width: 500px; height: 815px;
+	margin-top: 0px;
+}
+
+#div_tree_timer{
+	display: none;
+	width: 420px;
+	left: 40px; 
+	top: 680px;
+	position: absolute;
+	font-size: 1.2em;
+	font-weight: 400;
+}
+
+#span_tree_typed{	
+	width: 100%; /*为了使文字两端对齐 */ 
+	white-space: pre-wrap; /*保留换行效果*/ 
+}
+#canvas_tree{
+	width: 500px; height: 815px;
+}

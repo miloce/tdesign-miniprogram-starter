@@ -9,6 +9,8 @@ Page({
       enablePayment: false,
       rewardAdUnitId: '',
       price: 0,
+      codeProductId: '',
+      assistantProductId: '',
       vipPackages: [],
       exchangeItems: [],
     },
@@ -28,7 +30,7 @@ Page({
     this.setData({ loading: true });
     try {
       const res = await request('/admin/config');
-      const data = res.data.data;
+      const { data } = res;
       const appConfig = data.appConfig || {};
       this.setData({
         appConfig: {
@@ -93,6 +95,24 @@ Page({
     });
   },
 
+  onCodeProductIdChange(e) {
+    this.setData({
+      appConfig: {
+        ...this.data.appConfig,
+        codeProductId: e.detail.value,
+      },
+    });
+  },
+
+  onAssistantProductIdChange(e) {
+    this.setData({
+      appConfig: {
+        ...this.data.appConfig,
+        assistantProductId: e.detail.value,
+      },
+    });
+  },
+
   onPointsChange(e) {
     this.setData({
       userState: {
@@ -129,7 +149,10 @@ Page({
   onExchangeItemChange(e) {
     const { index, field } = e.currentTarget.dataset;
     const exchangeItems = this.data.appConfig.exchangeItems.slice();
-    const value = field === 'type' ? (Number(e.detail.value) === 1 ? 'vip' : 'quota') : e.detail.value;
+    let { value } = e.detail;
+    if (field === 'type') {
+      value = Number(value) === 1 ? 'vip' : 'quota';
+    }
     exchangeItems[Number(index)] = {
       ...exchangeItems[Number(index)],
       [field]: value,

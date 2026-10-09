@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/template/favicon.ico">
+    <title>1</title>
+    <link rel="stylesheet" href="/template/action/pick/card/style.css">
+</head>
+<body>
+<div class="container">
+    <img id="mainImage" src="https://picx.zhimg.com/80/v2-0a642d289ae2febbd00beb6fb7f1807d_720w.png" alt="爱心">
+    <h1 id="question">哈哈哈</h1>
+    <div class="buttons">
+        <button id="yes">当然可以</button>
+        <button id="no">再想想</button>
+    </div>
+</div>
+
+<div id="content" style="display:none;">123456</div>
+
+<audio id="noSound" src="/static/external/assets/noSound-4032daf59bd9-2d8043e5c826.mp3"></audio>
+<audio id="audio_music" loop></audio>
+
+<script src="/template/action/pick/card/main.js?1.0.0"></script>
+<script>
+var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+
+document.getElementById("audio_music").src = dataInfo.music;
+document.getElementById("question").innerText = dataInfo.ftitle;
+document.getElementById("content").innerText = dataInfo.content;
+
+let noSound = document.getElementById("noSound");
+
+// 主程序
+window.onload = () => {
+    // 初始化所有系统
+    const particleSystem = new ParticleSystem();
+    const sparkleSystem = new SparkleSystem();
+    const heartRainSystem = new HeartRainSystem();
+    const trailSystem = new TrailSystem();
+
+    // 获取DOM元素
+    const noButton = document.getElementById('no');
+    const yesButton = document.getElementById('yes');
+    const container = document.querySelector('.container');
+    const questionText = document.getElementById('question');
+    
+    // 初始化特效
+    new Effect3DSystem(container);
+    new MagneticButton(yesButton);
+    new RippleEffect(yesButton);
+    new GlowSystem(container);
+
+    // 启动基础特效
+    particleSystem.update();
+    sparkleSystem.start();
+    trailSystem.update();
+
+    // 鼠标移动特效
+    let lastX = 0, lastY = 0;
+    document.addEventListener('mousemove', (e) => {
+        if (Utils.distance(lastX, lastY, e.clientX, e.clientY) > 5) {
+            trailSystem.addPoint(e.clientX, e.clientY);
+            lastX = e.clientX;
+            lastY = e.clientY;
+        }
+    });
+
+    // 初始化按钮动画系统
+    const buttonAnimation = new ButtonAnimationSystem(noButton, yesButton);
+
+    //Yes按钮逻辑
+    const images = ['v2-74c1e4c813a3fc129c9bea588d00c4d7_720w.png', 'v2-61cff1367160c5009001e06a0d0e089e_720w.png', 'v2-8e2317bb70ec0beeb30f4522cac1e915_720w.png', 'v2-85e54dee5f519ff1a2b8aa7e370db816_720w.png'];
+    let currentImageIndex = 0;
+    
+    document.getElementById('yes').addEventListener('click', function() {
+        
+        // 初始化音乐播放
+        const bgMusic = initAutoPlay();
+        window.parent.postMessage({ source: 'pages', type: 'showBtn' }, '*');
+        var btns = document.querySelectorAll('.div_btn');
+        btns.length > 0 ? btns[0].style.display = "block" : '';
+        btns.length > 1 ? btns[1].style.display = "block" : '';
+        
+        const mainImage = document.getElementById('mainImage');
+        const question = document.getElementById('question');
+        const buttons = document.querySelector('.buttons');
+        const noButton = document.getElementById('no');
+        
+        //container.style.overflow = "scroll";
+        
+        // 启动爱心雨
+        heartRainSystem.start();
+        
+        // 创建粒子爆炸效果
+        const buttonRect = this.getBoundingClientRect();
+        const burstX = buttonRect.left + buttonRect.width / 2;
+        const burstY = buttonRect.top + buttonRect.height / 2;
+        
+        // 创建多个粒子爆炸
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => {
+                particleSystem.burst(burstX, burstY, {
+                    count: CONFIG.HEARTS.burstCount,
+                    radius: 100,
+                    shape: 'heart',
+                    colors: CONFIG.HEARTS.colors
+                });
+            }, i * 300);
+        }
+        
+        // 定义要显示的文字数组
+        const messages = [
+            '太好了！( >᎑<)♡︎ᐝ❤️',
+            document.getElementById('content').innerText + `\n${new Date().toLocaleString()} ❤️`
+        ];
+        let messageIndex = 0;
+        
+        // 添加过渡动画样式
+        mainImage.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+        question.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+        buttons.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        // 淡出当前内容并添加动画
+        mainImage.style.opacity = '0';
+        mainImage.style.transform = 'scale(0.8)';
+        question.style.opacity = '0';
+        question.style.transform = 'translateY(20px)';
+        buttons.style.opacity = '0';
+        buttons.style.transform = 'translateY(20px)';
+        
+        // 立即隐藏"再想想"按钮
+        if (noButton) {
+            noButton.style.transition = 'all 0.3s ease';
+            noButton.style.opacity = '0';
+            noButton.style.transform = 'scale(0)';
+            setTimeout(() => {
+                noButton.remove();
+            }, 300);
+        }
+        
+        setTimeout(() => {
+            buttons.style.display = 'none';
+            
+            // 显示第一条消息和拥抱图片
+            mainImage.src = dataInfo.coverImg;
+            question.textContent = messages[messageIndex];
+            question.style.whiteSpace = 'pre-line';
+            
+            // 添加进入动画
+            requestAnimationFrame(() => {
+                mainImage.style.opacity = '1';
+                mainImage.style.transform = 'scale(1)';
+                question.style.opacity = '1';
+                question.style.transform = 'translateY(0)';
+            });
+            
+            // 设置定时器显示第二条消息
+            setTimeout(() => {
+                // 淡出动画
+                question.style.opacity = '0';
+                question.style.transform = 'translateY(-20px)';
+                
+                setTimeout(() => {
+                    messageIndex++;
+                    question.textContent = messages[messageIndex];
+                    
+                    // 淡入动画
+                    requestAnimationFrame(() => {
+                        question.style.opacity = '1';
+                        question.style.transform = 'translateY(0)';
+                    });
+                }, 800);
+            }, 2000);
+            
+            // 10秒后停止爱心雨
+            setTimeout(() => {
+                heartRainSystem.stop();
+            }, 10000);
+            
+        }, 800);
+    });
+    
+
+    document.getElementById('no').addEventListener('click', function() {
+        if (noSound.readyState >= 4) { // 检查音频是否已加载完成
+            noSound.currentTime = 0; // 重置音频播放位置
+            noSound.play().catch(error => {
+              console.error('音频播放出错:', error);
+            });
+        }
+        const mainImage = document.getElementById('mainImage');
+        
+        mainImage.style.opacity = '0';
+        
+        setTimeout(() => {
+            mainImage.src = `https://pica.zhimg.com/80/${images[currentImageIndex]}`;
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            
+            mainImage.style.opacity = '1';
+        }, 300);
+
+        this.style.position = 'absolute';
+        this.style.left = Math.random() * (window.innerWidth - this.offsetWidth) + 'px';
+        this.style.top = Math.random() * (window.innerHeight - this.offsetHeight) + 'px';
+        
+    });
+};
+</script>
+</body>
+</html>

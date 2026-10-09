@@ -1,13 +1,18 @@
 .detail {
+  --td-brand-color: #0792ff;
+  --td-brand-color-active: #0f58d2;
+  --td-brand-color-hover: #1ba0ff;
+  --td-brand-color-light: #eef7ff;
+
   min-height: 100vh;
   padding-bottom: 144rpx;
-  background: #f5f7fb;
+  background: #f5f9ff;
 
   &__cover {
     width: 750rpx;
     height: 520rpx;
     display: block;
-    background: #d9e2ec;
+    background: #eef7ff;
   }
 
   &__content {
@@ -21,37 +26,15 @@
     line-height: 58rpx;
   }
 
-  &__subtitle {
-    margin-top: 12rpx;
-    color: #52616f;
-    font-size: 28rpx;
-    line-height: 42rpx;
-  }
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-  margin-top: 22rpx;
-
-  text {
-    height: 44rpx;
-    padding: 0 16rpx;
-    border-radius: 8rpx;
-    background: #e7f7f6;
-    color: #0f5b63;
-    font-size: 22rpx;
-    line-height: 44rpx;
-  }
 }
 
 .panel {
   margin-top: 24rpx;
   padding: 26rpx;
-  border: 1rpx solid #e6ebf2;
+  border: 1rpx solid #d8eaff;
   border-radius: 14rpx;
   background: #fff;
+  box-shadow: 0 8rpx 22rpx rgba(7, 146, 255, 0.08);
 
   &__title {
     margin-bottom: 18rpx;
@@ -71,8 +54,11 @@
 
   .required {
     margin-left: auto;
-    color: #c2410c;
+    color: #0f58d2;
     font-size: 22rpx;
+    padding: 4rpx 10rpx;
+    border-radius: 6rpx;
+    background: #eef7ff;
   }
 }
 
@@ -94,8 +80,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 20rpx;
   padding: 20rpx 24rpx 44rpx;
-  border-top: 1rpx solid #e6ebf2;
+  border-top: 1rpx solid #d8eaff;
   background: #fff;
   box-sizing: border-box;
 }
-

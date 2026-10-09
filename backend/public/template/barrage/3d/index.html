@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>️{$data.title|default="❤️"}</title>
+    <!-- <script type="module" crossorigin src="../../assets/love.1735305046112.js"></script> -->
+    <link rel="stylesheet" href="/template/barrage/3d/css/love" />
+    <style>
+         html,body{
+    		margin:0px;
+    		width:100%;
+    		height:100%;
+    		overflow:hidden;
+    	}
+    	
+        
+    </style>
+</head>
+
+<body>
+    
+<div id="webgl" style="width: 100vw;height: 100vh;margin:0;padding:0;background:#fff"></div>
+<div id="content" style="display:none;">{:str_replace(PHP_EOL,"<br>",strip_tags($data.content))}</div>
+<script>
+    var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    // 文案取前10行，每行最长15个字
+    const MSGLIST = dataInfo.content.split("\r\n").slice(0, 10).map(text => text.slice(0, 15));
+</script>
+<script type="module">
+import bt from "/template/barrage/3d/love.js?1005";
+
+setTimeout(() => {
+ bt.setup();
+}, 200);
+</script>
+</body>
+</html>

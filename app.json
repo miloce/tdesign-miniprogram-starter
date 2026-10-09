@@ -1,8 +1,12 @@
 {
-  "pages": ["pages/home/index", "pages/my/index"],
-  "usingComponents": {
-    "t-toast": "tdesign-miniprogram/toast/toast"
-  },
+  "pages": [
+    "pages/home/index",
+    "pages/square/index",
+    "pages/square/publish/index",
+    "pages/square/detail/index",
+    "pages/my/index"
+  ],
+  "lazyCodeLoading": "requiredComponents",
   "subpackages": [
     {
       "root": "pages/search",
@@ -20,8 +24,13 @@
       "pages": ["index"]
     },
     {
-      "root": "pages/chat",
-      "name": "chat",
+      "root": "pages/my/orders",
+      "name": "orders",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/my/assistant",
+      "name": "assistant",
       "pages": ["index"]
     },
     {
@@ -47,11 +56,6 @@
     {
       "root": "pages/setting",
       "name": "setting",
-      "pages": ["index"]
-    },
-    {
-      "root": "pages/release",
-      "name": "release",
       "pages": ["index"]
     },
     {
@@ -92,6 +96,10 @@
       {
         "pagePath": "pages/home/index",
         "text": "首页"
+      },
+      {
+        "pagePath": "pages/square/index",
+        "text": "广场"
       },
       {
         "pagePath": "pages/my/index",

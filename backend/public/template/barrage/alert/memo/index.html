@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title></title>
+	<style>
+		*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background-image:linear-gradient(0deg,#eee 1px,transparent 0),linear-gradient(90deg,#eee 1px,transparent 0);background-size:30px 30px;color:#333;min-height:100dvh;overflow:hidden}body.has-maximized-card{overflow:hidden}body.is-mobile{overflow-y:auto}#board{position:relative;width:100vw;height:100dvh;overflow:hidden}body.is-mobile #board{height:auto;min-height:100dvh}.card{position:absolute;width:220px;border-radius:12px;box-shadow:0 16px 35px rgba(0,0,0,.2);background:#fff;border:1px solid rgba(0,0,0,.08);overflow:hidden;opacity:0;transform-origin:center;transition:transform .35s ease,opacity .35s ease,left .35s ease,top .35s ease,width .35s ease,height .35s ease,border-radius .35s ease}.card.dragging{transition:none;box-shadow:0 22px 45px rgba(0,0,0,.35)}.card.maximized{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;border-radius:0;box-shadow:0 28px 60px rgba(0,0,0,.4)}.card-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,.7);cursor:grab;user-select:none;touch-action:pan-y}.card-header.dragging{cursor:grabbing}.window-controls{display:flex;align-items:center;gap:6px}.window-controls .control{position:relative;width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.08);background:#ccc;cursor:pointer;outline:0;padding:0;display:inline-flex;align-items:center;justify-content:center}.window-controls .control.close{background:#ff5f57;border-color:#e0443e}.window-controls .control.minimize{background:#febb2e;border-color:#dea123}.window-controls .control.maximize{background:#28c840;border-color:#1aab2c}.window-controls .control::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity .2s ease}.card-header:hover .window-controls .control::after{opacity:.8}.window-controls .control.close::after{content:'×';width:auto;height:auto;background:0 0;font-size:10px;line-height:1;font-weight:700;color:rgba(0,0,0,.7)}.window-controls .control.minimize::after{width:6px;height:2px;background:rgba(0,0,0,.6)}.window-controls .control.maximize::after{width:6px;height:6px;background:linear-gradient(45deg,rgba(0,0,0,.6) 0,rgba(0,0,0,.6) 45%,transparent 45%,transparent 55%,rgba(0,0,0,.6) 55%,rgba(0,0,0,.6) 100%)}.card-title{font-size:13px;font-weight:600;color:rgba(0,0,0,.55);padding-left:10px;flex:1}.card-body{padding:16px;font-size:16px;line-height:1.4;font-weight:600;color:rgba(0,0,0,.72);word-break:break-word;overflow-wrap:anywhere;white-space:normal}.card.maximized{display:flex;flex-direction:column}.card.maximized .card-title{display:none}.card.maximized .card-body{flex:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;text-align:center;padding:clamp(32px,min(10vw,10vh),128px);padding-top:clamp(72px,min(14vw,14vh),192px);font-size:clamp(48px,min(18vw,18vh),200px);line-height:1.05}@media (max-width:768px){.card{width:180px;border-radius:10px}.card-body{padding:14px;font-size:14px}.card-title{font-size:12px}}
+	</style>
+	<script src="/template/common/js/main.js?v10056" defer></script>
+</head>
+<body>
+
+<div id="board"></div>
+
+<script>
+    let dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    
+	const board = document.getElementById('board')
+	const messages = dataInfo.content.split("\r\n");
+	
+    //打开事件
+    function onOpenClcik(){
+        document.getElementById('board').style.display = 'block';
+        for (let i = 0; i < initialCardCount; i++) {
+            setTimeout(createCard, i * (isMobile ? 60 : 40))
+        }
+        scheduleNextSpawn();
+    }
+    
+    const tipTitle = dataInfo.title;
+</script>
+<script src="/template/barrage/alert/memo/script.js?v1003"></script>
+</body>
+</html>

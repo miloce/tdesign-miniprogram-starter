@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title></title>
+    <style>body{margin:0;padding:0;overflow:hidden;background:#132c33;font-family:'Microsoft YaHei',sans-serif;height:100vh;width:100vw;position:relative}#fireworksCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}.warm-tip-window{position:absolute;width:110px;height:32px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:1000;overflow:hidden;border:1px solid rgba(255,255,255,0.2);will-change:transform;transform:translateZ(0);transition:all 2s cubic-bezier(0.25,0.1,0.25,1)}.tip-text{text-align:center;font-size:10px;color:#fff;padding:0 5px;word-break:break-all;z-index:2;text-shadow:0 1px 2px rgba(0,0,0,0.5);font-weight:500}.petal-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}</style>
+    <script src="/template/common/js/main.js?v1004" defer></script>
+</head>
+<body>
+<canvas id="fireworksCanvas"></canvas>
+
+<script>
+    let dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    const tips = (typeof dataInfo !== 'undefined' && dataInfo?.content) ? dataInfo.content.split('\r\n') : [];
+    
+    //打开事件
+    function onOpenClcik() {
+        const heartSize = 10;       // 爱心尺寸
+        const delayStep = 0.3;      // 标签延迟
+        fireworks = new Fireworks();
+        createHeartWindows(heartSize, delayStep);
+    }
+</script>
+<script src="./script.js?v10062"></script>
+</body>
+</html>

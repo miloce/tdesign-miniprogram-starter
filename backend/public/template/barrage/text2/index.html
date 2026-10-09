@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>开启我的2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: white;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: background-color 2s ease;
+        }
+
+        body.dark {
+            background-color: #000;
+        }
+
+        .stars-bg, .shooting-star {
+            display: none;
+        }
+
+        .intro-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .intro-layer.fade-out {
+            opacity: 0;
+            transform: scale(1.5);
+            pointer-events: none;
+        }
+
+        .time-capsule-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .glow-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 1px solid rgba(100, 100, 100, 0.3);
+            animation: ripple 2s linear infinite;
+        }
+
+        @keyframes ripple {
+            0% { width: 200px; height: 200px; opacity: 0.8; border-width: 2px; }
+            100% { width: 340px; height: 340px; opacity: 0; border-width: 0px; }
+        }
+
+        .time-capsule {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #b080e8 0%, #5590e8 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 40px rgba(85, 144, 232, 0.8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 2;
+            outline: none;
+        }
+
+        .time-capsule:active {
+            transform: scale(0.95);
+        }
+
+        .capsule-text {
+            color: #fff;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.2;
+            letter-spacing: 2px;
+        }
+
+        .pulse-text {
+            margin-top: 40px;
+            color: rgba(100, 100, 100, 0.7);
+            font-size: 14px;
+            letter-spacing: 4px;
+            animation: textPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .universe-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .universe-layer.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .core-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.6);
+            color: #ffd91d;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(204, 51, 51, 0.3);
+            z-index: 50;
+            white-space: nowrap;
+            opacity: 0;
+            letter-spacing: 1px;
+            will-change: transform, opacity;
+            transition: 
+                opacity 1.2s ease-out, 
+                transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @media (min-width: 768px) {
+            .core-text { font-size: 48px; }
+        }
+
+        @media (min-width: 1024px) {
+            .core-text { font-size: 60px; }
+        }
+
+        #galaxyCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-color: #000;
+        }
+
+        .firework-tip {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 50;
+            pointer-events: none;
+            animation: tipPulse 2s ease-in-out infinite;
+        }
+
+        .firework-tip.show {
+            opacity: 1;
+        }
+        
+        show {
+            opacity: 1;
+        }
+
+        @keyframes tipPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        audio {
+            display: none;
+        }
+        
+        #fireworkTip{opacity: 0;}
+    </style>
+</head>
+<body>
+<div class="stars-bg" id="starsBg"></div>
+<div class="shooting-star"></div>
+<div class="shooting-star"></div>
+
+<div class="intro-layer" id="introLayer">
+    <div class="time-capsule-container">
+        <div class="glow-ring"></div>
+        <div class="time-capsule" id="openBtn">
+            <span class="capsule-text" id=capsuleText>开启<br>2026</span>
+        </div>
+        <div class="pulse-text" id="pulseText">点击此处开启你的2026</div>
+    </div>
+</div>
+
+<div class="universe-layer" id="mainLayer">
+    <div class="core-text" id="coreText">希望2026年的自己…</div>
+    <canvas id="galaxyCanvas"></canvas>
+    <div class="firework-tip" id="fireworkTip" style="display:none;">点击屏幕放烟花</div>
+</div>
+
+<audio id="bgMusic" src="https://lf9-music-east.douyinstatic.com/obj/ies-music-hj/7530321904100576060.mp3" loop preload="auto"></audio>
+
+<script>
+    let dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    
+    // DOM元素获取
+    const openBtn = document.getElementById('openBtn');
+    const introLayer = document.getElementById('introLayer');
+    const mainLayer = document.getElementById('mainLayer');
+    const coreText = document.getElementById('coreText');
+    const galaxyCanvas = document.getElementById('galaxyCanvas');
+    const bgMusic = document.getElementById('bgMusic');
+    const fireworkTip = document.getElementById('fireworkTip');
+    const capsuleText = document.getElementById('capsuleText');
+    const pulseText = document.getElementById('pulseText');
+    const ctx = galaxyCanvas.getContext('2d');
+    
+    coreText.innerText = dataInfo.ftitle;
+    capsuleText.innerHTML = dataInfo.mtitle.replaceAll("\n","<br>");
+    
+    window.blessings = dataInfo.content.split("\r\n");
+    bgMusic.src = dataInfo.music;
+
+
+</script>
+<script type="module" src="/template/barrage/text/script.js?v109"></script>
+</body>
+</html>

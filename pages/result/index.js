@@ -11,8 +11,12 @@ Page({
 
   timer: null,
   retryCount: 0,
+  pollGeneration: 0,
+  queryInFlight: false,
+  destroyed: false,
 
   onLoad(options) {
+    this.destroyed = false;
     const result = options.data ? JSON.parse(decodeURIComponent(options.data)) : null;
     const orderId = options.id || options.orderId || (result && result.id) || '';
     this.setData({ result, orderId });
@@ -28,19 +32,25 @@ Page({
   },
 
   onUnload() {
+    this.destroyed = true;
     this.stopPolling();
   },
 
   async queryResult() {
-    if (!this.data.orderId) return;
+    if (!this.data.orderId || this.destroyed || this.queryInFlight) return;
+    const generation = this.pollGeneration;
+    let completed = false;
+    this.queryInFlight = true;
     this.setData({ loading: true, failed: false });
     try {
       const res = await request('/wechat/getItemStatus', 'GET', {
         id: this.data.orderId,
         _t: Date.now(),
       });
+      if (this.destroyed || generation !== this.pollGeneration) return;
       const payload = res.data || {};
       if (String(payload.status) === '1' && payload.url) {
+        completed = true;
         this.stopPolling();
         this.setData({
           loading: false,
@@ -53,18 +63,22 @@ Page({
             qrcode: payload.qrcode || payload.url,
           },
         });
-        return;
       }
-      this.startPolling();
     } catch (err) {
-      this.startPolling();
+      // 下一次串行轮询会重试，避免并发请求覆盖较新的结果。
+    } finally {
+      this.queryInFlight = false;
+      if (!completed && !this.destroyed && generation === this.pollGeneration) {
+        this.startPolling();
+      }
     }
   },
 
   startPolling() {
     if (this.timer) return;
     this.setData({ loading: true, statusText: '生成中，请稍候' });
-    this.timer = setInterval(() => {
+    this.timer = setTimeout(() => {
+      this.timer = null;
       this.retryCount += 1;
       if (this.retryCount > 20) {
         this.stopPolling();
@@ -81,9 +95,10 @@ Page({
 
   stopPolling() {
     if (this.timer) {
-      clearInterval(this.timer);
+      clearTimeout(this.timer);
       this.timer = null;
     }
+    this.pollGeneration += 1;
   },
 
   onOpen() {
@@ -112,7 +127,25 @@ Page({
   },
 
   onRetry() {
+    this.stopPolling();
     this.retryCount = 0;
+    this.destroyed = false;
     this.queryResult();
+  },
+
+  onShareAppMessage() {
+    const {result} = this.data;
+    return {
+      title: result && result.title ? `${result.title}｜云栈点` : '云栈点｜一键制作你的专属代码',
+      path: this.data.orderId ? `/pages/result/index?id=${this.data.orderId}` : '/pages/home/index',
+    };
+  },
+
+  onShareTimeline() {
+    const {result} = this.data;
+    return {
+      title: result && result.title ? `${result.title}｜云栈点` : '云栈点｜一键制作你的专属代码',
+      query: this.data.orderId ? `id=${this.data.orderId}` : '',
+    };
   },
 });

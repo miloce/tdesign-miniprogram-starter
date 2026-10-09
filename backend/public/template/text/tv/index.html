@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{overflow-x: hidden;margin:0;background:#000;height:100vh;}.video-container{position:relative;width:100%;max-width:900px}video{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center;}.center-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:1.8rem;font-weight:700;pointer-events:none;animation:moveText 1s linear infinite}@keyframes moveText{from{opacity:.4}to{opacity:1}}
+        #text-view{text-shadow: 1px 1px 0px #000, -1px -1px 0px #000, -1px 1px 0px #000, 1px -1px 0px #000;}
+    </style>
+    <script>
+        var dataInfo = (function () {
+            var defaults = {
+                title: '',
+                ftitle: '',
+                content: '',
+                video: '',
+                color: '',
+                btnTitle1: '',
+                versionId: Date.now()
+            };
+            function withDefaults(value) {
+                return Object.assign({}, defaults, value || {});
+            }
+            try {
+                var cached = localStorage.getItem('templateDate');
+                if (cached) return withDefaults(JSON.parse(cached));
+            } catch (error) {}
+            try {
+                var match = location.hash.match(/(?:^|[&#])yzdData=([^&]+)/);
+                if (match) {
+                    var parsed = JSON.parse(decodeURIComponent(match[1]));
+                    try { localStorage.setItem('templateDate', JSON.stringify(parsed)); } catch (error) {}
+                    return withDefaults(parsed);
+                }
+            } catch (error) {}
+            try {
+                return withDefaults(window.parent && window.parent.templateData);
+            } catch (error) {}
+            return withDefaults({});
+        })();
+        
+        //启用插件
+        dataInfo.plugin = dataInfo.plugin || {}
+        
+        //打印文字插件配置信息
+        dataInfo.plugin.printText = {
+            padding: '2rem 2rem 0rem 1.5rem',
+            text: dataInfo.content,
+            fontSize: '1rem',
+            lineHeight: '1.8rem',
+            color: dataInfo.color ? dataInfo.color : '#fff',
+            autoPrint: false,
+        }
+        
+        window.TEMPLATE_ASSETS = {
+            version: dataInfo.versionId,
+            js: [
+                "../../common/js/printText.js",
+            ],
+            css: []
+        };
+    </script>
+    <script src="../../common/js/loader.js"></script>
+</head>
+<body>
+
+<div class="video-container">
+
+    <video
+        src=""
+        loop
+        muted
+        playsinline
+        webkit-playsinline
+        x5-playsinline
+        x5-video-player-type="h5"
+        x5-video-player-fullscreen="true"
+        x5-video-orientation="portraint"
+    ></video>
+
+    <div class="center-text"></div>
+
+</div>
+    
+<script>
+    const v = document.querySelector('video');
+    const ftitle = document.querySelector('.center-text');
+    
+    v.src = dataInfo.video;
+    ftitle.innerText = dataInfo.ftitle;
+    
+    if(dataInfo.btnTitle1){
+        v.style.transform = "scale("+ dataInfo.btnTitle1 +")"; //缩放比例
+        v.style.transformOrigin = "center center"; //固定从中心缩放
+    }
+    
+    //打开事件
+    function onOpenClcik(){
+        printText();
+        v.play();
+    }
+    
+    document.body.addEventListener('touchstart', function () {
+        
+        v.play();
+    });
+</script>
+</body>
+</html>

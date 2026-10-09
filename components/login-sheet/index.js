@@ -1,4 +1,8 @@
-import { loginWithWechat } from '../../utils/auth';
+import config from '../../config';
+import { loginWithWechat, saveUserProfile } from '../../utils/auth';
+
+const DEFAULT_AVATAR = '/static/avatar1.png';
+const DEFAULT_NICKNAME = '云栈点用户';
 
 Component({
   properties: {
@@ -13,6 +17,10 @@ Component({
     agreed: false,
     submitting: false,
     errMsg: '',
+    profileStep: false,
+    pendingUserInfo: null,
+    avatarUrl: DEFAULT_AVATAR,
+    nickname: '',
   },
 
   observers: {
@@ -21,6 +29,7 @@ Component({
       this.setData({
         visible: Boolean(value),
         errMsg: '',
+        profileStep: false,
       });
     },
   },
@@ -40,11 +49,15 @@ Component({
 
     onMask() {
       if (this.data.submitting) return;
+      if (this.data.profileStep) {
+        this.setData({ errMsg: '请完善头像和昵称' });
+        return;
+      }
       this.close();
     },
 
     close() {
-      this.setData({ visible: false, submitting: false });
+      this.setData({ visible: false, submitting: false, profileStep: false });
       this.setTabBarHidden(false);
       this.triggerEvent('close');
     },
@@ -80,10 +93,17 @@ Component({
       try {
         const userInfo = await loginWithWechat();
         wx.hideLoading();
-        wx.showToast({ title: '登录成功', icon: 'success' });
-        this.setData({ visible: false, submitting: false });
-        this.setTabBarHidden(false);
-        this.triggerEvent('success', { userInfo });
+        if (this.needsProfile(userInfo)) {
+          this.setData({
+            submitting: false,
+            profileStep: true,
+            pendingUserInfo: userInfo,
+            avatarUrl: userInfo.avatar || DEFAULT_AVATAR,
+            nickname: this.isDefaultNickname(userInfo.nickname) ? '' : userInfo.nickname,
+          });
+          return;
+        }
+        this.finishLogin(userInfo);
       } catch (err) {
         wx.hideLoading();
         this.setData({
@@ -91,6 +111,107 @@ Component({
           errMsg: err.message || '登录失败，请重试',
         });
       }
+    },
+
+    needsProfile(userInfo = {}) {
+      return !userInfo.avatar || userInfo.avatar === DEFAULT_AVATAR || this.isTemporaryAvatar(userInfo.avatar) || this.isDefaultNickname(userInfo.nickname);
+    },
+
+    isDefaultNickname(nickname) {
+      return !nickname || nickname === DEFAULT_NICKNAME;
+    },
+
+    isTemporaryAvatar(path) {
+      return /^https?:\/\/tmp\//.test(path) || /^wxfile:\/\//.test(path);
+    },
+
+    onChooseAvatar(e) {
+      const avatarUrl = e.detail && e.detail.avatarUrl;
+      if (!avatarUrl) return;
+      this.setData({ avatarUrl, errMsg: '' });
+    },
+
+    onNicknameInput(e) {
+      this.setData({
+        nickname: e.detail.value,
+        errMsg: '',
+      });
+    },
+
+    async onConfirmProfile() {
+      if (this.data.submitting) return;
+      const nickname = String(this.data.nickname || '').trim();
+      if (!nickname) {
+        this.setData({ errMsg: '请输入昵称' });
+        return;
+      }
+      if (!this.data.avatarUrl || this.data.avatarUrl === DEFAULT_AVATAR) {
+        this.setData({ errMsg: '请选择头像' });
+        return;
+      }
+
+      this.setData({ submitting: true, errMsg: '' });
+      wx.showLoading({ title: '保存中' });
+      try {
+        const avatar = await this.uploadAvatarIfNeeded(this.data.avatarUrl);
+        const userInfo = await saveUserProfile({ nickname, avatar });
+        wx.hideLoading();
+        this.finishLogin(userInfo);
+      } catch (err) {
+        wx.hideLoading();
+        this.setData({
+          submitting: false,
+          errMsg: err.message || '资料保存失败，请重试',
+        });
+      }
+    },
+
+    uploadAvatarIfNeeded(path) {
+      if ((/^https?:\/\//.test(path) && !this.isTemporaryAvatar(path)) || path.startsWith('/uploads/') || path.startsWith('/static/')) {
+        return Promise.resolve(path);
+      }
+
+      return new Promise((resolve, reject) => {
+        wx.uploadFile({
+          url: `${config.baseUrl}/user/avatar`,
+          filePath: path,
+          name: 'avatar',
+          header: {
+            Authorization: `Bearer ${wx.getStorageSync('access_token') || ''}`,
+          },
+          success(res) {
+            let payload = res.data;
+            if (typeof payload === 'string') {
+              try {
+                payload = JSON.parse(payload);
+              } catch (err) {
+                reject(new Error('头像上传返回异常'));
+                return;
+              }
+            }
+            if (payload && payload.code === 200 && payload.data && payload.data.avatar) {
+              resolve(payload.data.avatar);
+              return;
+            }
+            reject(new Error((payload && payload.message) || '头像上传失败'));
+          },
+          fail() {
+            reject(new Error('头像上传失败'));
+          },
+        });
+      });
+    },
+
+    finishLogin(userInfo) {
+      wx.showToast({ title: '登录成功', icon: 'success' });
+      this.setData({
+        visible: false,
+        submitting: false,
+        profileStep: false,
+        pendingUserInfo: null,
+      });
+      this.setTabBarHidden(false);
+      this.triggerEvent('success', { userInfo });
     },
   },
 

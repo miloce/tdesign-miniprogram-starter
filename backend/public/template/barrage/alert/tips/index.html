@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title></title>
+  <style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}body{background:#fff;min-height:100vh;overflow:hidden}.popup{position:absolute;padding:12px 20px;border-radius:6px;box-shadow:0 3px 10px rgba(0,0,0,0.1);z-index:999;animation:popIn .2s ease,bounce 1s ease-in-out infinite alternate;cursor:move;display:flex;align-items:center;gap:6px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.05))}.popup .heart-icon{color:#ff4d4f;font-size:16px;animation:pulse 2s ease-in-out infinite}.popup .text{font-size:14px;font-weight:600;color:#333}.popup.bg-pink{background:linear-gradient(135deg,#fff0f6 0%,#ffe6f2 100%)}.popup.bg-blue{background:linear-gradient(135deg,#f0f9ff 0%,#e6f7ff 100%)}.popup.bg-yellow{background:linear-gradient(135deg,#fff9e6 0%,#fff3d7 100%)}.popup.bg-purple{background:linear-gradient(135deg,#f3e6ff 0%,#e9d7ff 100%)}@keyframes popIn{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}@keyframes bounce{0%{transform:translateY(0)}100%{transform:translateY(-7px)}}@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}</style>
+  <script src="/template/common/js/main.js?v1004" defer></script>
+</head>
+<body>
+  <div id="popup-container"></div>
+
+  <script>
+    // 动态文案数据1
+    let dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    const tips = (typeof dataInfo !== 'undefined' && dataInfo?.content) ? dataInfo.content.split('\r\n') : [];
+
+    // 提示前缀文本
+    const tipIconText = dataInfo.title;//(typeof dataInfo !== 'undefined' && dataInfo?.ftitle) ? dataInfo.ftitle : '';
+
+    // 外层点击后执行的函数
+    function onOpenClcik(){
+        startGiftAnimation();
+    }
+  </script>
+  <script src="./script.js?v10016"></script>
+</body>
+</html>

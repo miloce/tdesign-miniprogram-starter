@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>520我爱你💗</title>
+    <meta name="viewport" content="width=500, target-densitydpi=device-dpi, user-scalable=0">
+    <link type="text/css" rel="stylesheet" href="/template/love/tree/css/style.css">
+    <style>
+        .div_btn { position: fixed; cursor: pointer; width: 2.5rem; height: 2.5rem; border: 2px solid #fff; border-radius: 50%; font-size: 1rem; line-height: 2.3rem; text-align: center; z-index: 999; opacity: 0.7; background-color: rgba(0,0,0,.3); } .div_btn a{color:#fff;text-decoration:none;} #btn-make { bottom: 8.5rem; right: 18px; } #div_support { bottom: 4rem; right: 18px; } #btn-make a,#div_support a{text-shadow: 1px 1px 1px #000;}#action-make { bottom: 5rem; position: fixed; width: 100%; height: 80px; z-index: 99999; text-align: center; font-size: 1.5rem; } #action-make .btn1 { color: #fff; background-color: #2196f3; } #action-make .btn-return { float: left; border-radius: 0 2rem 2rem 0; padding: 0.8rem 2.4rem 0.8rem 2.4rem; box-shadow: 0.2rem 0 0.2rem #888888; } #action-make .btn-make { float: right; border-radius: 2rem 0 0 2rem; padding: 0.8rem 1.5rem 0.8rem 1.5rem; box-shadow: 0 0.2rem 0.2rem #888888; }@keyframes text-flicker { 0% {opacity: 0} 49% {opacity: 0} 50% {opacity: 1} }.cur-end{animation: text-flicker 0.8s infinite;}#btn-hot { bottom: 12.5rem; right: 18px; background-color: #bf1e1e; color: #fff; font-weight: bold; }
+    </style>
+</head>
+
+<body style="background-color:#FFF;overflow: auto;">
+<div id="div_container">
+    <div id="div_start_bg" style="height: 607px;"></div>
+    <div id="div_hearttree" style="height:100vh;display: block;">
+        <div id="div_tree_error">
+            很可惜你的手机浏览器不支持，错过了惊喜效果哦
+        </div>
+        <div id="div_tree_start"></div>
+        <div id="div_tree_main">
+            <div id="div_tree_text" style="margin-top:30px;left: 30px;">
+                <span id="span_tree_typed" style="font-size:1.3rem;line-height: 1.8rem;"></span>
+            </div>
+            <canvas id="canvas_tree" width="500" height="815"></canvas>
+            <div id="div_tree_timer">
+                <span id="span_tree_desc">𝟓𝟐𝟎不特别 
+<br>特别的是𝟓𝟐𝟎有你
+<br>愿甜蜜和浪漫铺满整个五月💗</span>
+                <div id="div_tree_interval"></div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<!--
+<audio id="audio_music" data-id="audio_music" autoplay="autoplay" preload="auto" loop>
+    <source src="" type="audio/mpeg" />
+    <embed hidden="true" autostart="true" height="0" width=0 loop="true" src="" autoplay="autoplay"/>
+</audio>
+-->
+<script src="/template/common/js/jquery-2.1.1.min.js"></script>
+<script src="/template/love/tree/js/typed.min.js"></script>
+<script src="/template/love/tree/js/jscex.min.js"></script>
+<script src="/template/love/tree/js/jscex-parser.js"></script>
+<script src="/template/love/tree/js/jscex-jit.js"></script>
+<script src="/template/love/tree/js/jscex-other.js"></script>
+
+<script>
+    var dataInfo = JSON.parse(localStorage.getItem('templateDate'));
+    var id = "1910";
+    var data_type = "0";
+    var vip_type = "0";
+    var temp_id = "14";
+    var views = "622";
+    $("#span_tree_desc").text(dataInfo.content);
+    dataInfo.is_mobile = /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent);
+    var start_content = {
+        "hearttree_desc": "",//副标题
+    };
+    $("#audio_music").attr('src', dataInfo.music);
+    $("#div_start_bg").css({
+        "background-image": "url("+ dataInfo.backgroundImg + ")",
+        "background-size": "100% 100%",
+        "background-repeat": "no-repeat",
+        "background-position": "center center",
+        "opacity": dataInfo.opacity / 100,
+        "height": "1081px"
+    });
+
+    var tempRes={data:start_content};
+
+    var start_id;
+        var start_content = {
+        "hearttree_desc": "",//副标题
+    };
+    
+    var tempRes={data:start_content};
+
+    var start_id;
+    $(function () {
+        //此事件为触发互动创意
+        $('#div_hearttree').show();
+        init_hearttree();
+    });
+    start_content.hearttree_text = $("#span_tree_desc").text();
+</script>
+
+<script src="/template/love/tree/js/start_hearttree.js"></script>
+<script src="/template/common/js/jquery-2.1.1.min.js"></script></body>
+</html>
